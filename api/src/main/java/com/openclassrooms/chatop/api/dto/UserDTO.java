@@ -1,6 +1,7 @@
 package com.openclassrooms.chatop.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.openclassrooms.chatop.api.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,4 +26,24 @@ public class UserDTO {
 
     @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDateTime updated_at;
+
+    /**
+     * Convert a User entity to a UserDTO.
+     * This method ensures that sensitive information (like password) is never exposed.
+     *
+     * @param user the User entity to convert
+     * @return a UserDTO containing the user's public information
+     */
+    public static UserDTO fromEntity(User user) {
+        if (user == null) {
+            return null;
+        }
+        return new UserDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getCreatedAt(),
+                user.getUpdatedAt()
+        );
+    }
 }
