@@ -1,4 +1,4 @@
-package com.openclassrooms.chatop.api.dto;
+package com.openclassrooms.chatop.api.dto.rental;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

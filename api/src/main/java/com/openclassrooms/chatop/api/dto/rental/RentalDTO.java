@@ -1,4 +1,4 @@
-package com.openclassrooms.chatop.api.dto;
+package com.openclassrooms.chatop.api.dto.rental;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.openclassrooms.chatop.api.model.Rental;

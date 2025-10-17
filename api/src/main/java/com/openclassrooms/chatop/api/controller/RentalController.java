@@ -1,6 +1,7 @@
 package com.openclassrooms.chatop.api.controller;
 
-import com.openclassrooms.chatop.api.dto.*;
+import com.openclassrooms.chatop.api.dto.rental.*;
+import com.openclassrooms.chatop.api.dto.common.MessageResponse;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.UserRepository;
 import com.openclassrooms.chatop.api.service.RentalService;

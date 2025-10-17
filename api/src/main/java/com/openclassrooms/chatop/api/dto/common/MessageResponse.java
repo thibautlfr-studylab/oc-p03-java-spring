@@ -1,4 +1,4 @@
-package com.openclassrooms.chatop.api.dto;
+package com.openclassrooms.chatop.api.dto.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

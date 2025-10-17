@@ -1,6 +1,6 @@
 package com.openclassrooms.chatop.api.service;
 
-import com.openclassrooms.chatop.api.dto.UserDTO;
+import com.openclassrooms.chatop.api.dto.user.UserDTO;
 import com.openclassrooms.chatop.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

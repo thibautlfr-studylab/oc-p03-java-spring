@@ -1,9 +1,9 @@
 package com.openclassrooms.chatop.api.service;
 
-import com.openclassrooms.chatop.api.dto.AuthResponse;
-import com.openclassrooms.chatop.api.dto.LoginRequest;
-import com.openclassrooms.chatop.api.dto.RegisterRequest;
-import com.openclassrooms.chatop.api.dto.UserDTO;
+import com.openclassrooms.chatop.api.dto.auth.AuthResponse;
+import com.openclassrooms.chatop.api.dto.auth.LoginRequest;
+import com.openclassrooms.chatop.api.dto.auth.RegisterRequest;
+import com.openclassrooms.chatop.api.dto.user.UserDTO;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

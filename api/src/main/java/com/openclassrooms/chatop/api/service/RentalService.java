@@ -1,8 +1,8 @@
 package com.openclassrooms.chatop.api.service;
 
-import com.openclassrooms.chatop.api.dto.CreateRentalRequest;
-import com.openclassrooms.chatop.api.dto.RentalDTO;
-import com.openclassrooms.chatop.api.dto.UpdateRentalRequest;
+import com.openclassrooms.chatop.api.dto.rental.CreateRentalRequest;
+import com.openclassrooms.chatop.api.dto.rental.RentalDTO;
+import com.openclassrooms.chatop.api.dto.rental.UpdateRentalRequest;
 import com.openclassrooms.chatop.api.model.Rental;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.RentalRepository;
