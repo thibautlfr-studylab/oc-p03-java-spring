@@ -75,13 +75,13 @@ public class AuthService {
         // Authenticate the user
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getLogin(),
+                        request.getEmail(),
                         request.getPassword()
                 )
         );
 
         // Load user details
-        User user = userRepository.findByEmail(request.getLogin())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // Generate JWT token
