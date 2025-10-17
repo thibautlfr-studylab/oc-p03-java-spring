@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * Handles HTTP requests for user-related operations.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 @RequiredArgsConstructor
 @Tag(name = "Users", description = "User management endpoints")
 public class UserController {
