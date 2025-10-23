@@ -8,6 +8,8 @@
 
 ## Table of Contents
 
+[__TOC__]
+
 - [About the Project](#about-the-project)
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
@@ -544,8 +546,6 @@ Application logs are available in the console. For production, configure logging
 logging.level.com.openclassrooms.chatop=DEBUG
 logging.file.name=logs/chatop-api.log
 ```
-
----
 
 ## Resources
 
