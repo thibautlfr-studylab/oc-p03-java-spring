@@ -5,6 +5,13 @@ import com.openclassrooms.chatop.api.dto.auth.LoginRequest;
 import com.openclassrooms.chatop.api.dto.auth.RegisterRequest;
 import com.openclassrooms.chatop.api.dto.user.UserDTO;
 import com.openclassrooms.chatop.api.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Authentication and user registration endpoints")
 public class AuthController {
 
     private final AuthService authService;
@@ -30,6 +38,28 @@ public class AuthController {
      * @return AuthResponse with JWT token
      */
     @PostMapping("/register")
+    @Operation(
+            summary = "Register a new user",
+            description = "Creates a new user account with encrypted password and returns a JWT token. No authentication required."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "User registered successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AuthResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid input or email already exists",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
             AuthResponse response = authService.register(request);
@@ -48,6 +78,28 @@ public class AuthController {
      * @return AuthResponse with JWT token
      */
     @PostMapping("/login")
+    @Operation(
+            summary = "User login",
+            description = "Authenticates a user with email and password, returns a JWT token if successful. No authentication required."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Login successful",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AuthResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Invalid credentials",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
             AuthResponse response = authService.login(request);
@@ -66,6 +118,29 @@ public class AuthController {
      * @return UserDTO with current user information
      */
     @GetMapping("/me")
+    @Operation(
+            summary = "Get current user",
+            description = "Returns the authenticated user's information. Requires a valid JWT token in the Authorization header.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "User information retrieved successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Not authenticated or invalid token",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
     public ResponseEntity<?> getCurrentUser() {
         try {
             UserDTO user = authService.getCurrentUser();
