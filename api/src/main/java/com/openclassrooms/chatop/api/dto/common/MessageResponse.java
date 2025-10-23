@@ -1,5 +1,6 @@
 package com.openclassrooms.chatop.api.dto.common;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Generic success message response")
 public class MessageResponse {
+
+    @Schema(description = "Success or status message", example = "Rental created !")
     private String message;
 }
