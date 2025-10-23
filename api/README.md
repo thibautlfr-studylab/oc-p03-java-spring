@@ -8,8 +8,6 @@
 
 ## Table of Contents
 
-[__TOC__]
-
 - [About the Project](#about-the-project)
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
