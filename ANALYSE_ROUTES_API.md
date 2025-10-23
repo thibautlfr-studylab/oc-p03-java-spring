@@ -412,6 +412,10 @@ Authorization: Bearer {jwt_token}
 ou `springdoc-openapi-ui` (Spring Boot 2.x)
 **Utilité**: Documentation automatique de l'API
 
+### 8. Lombok (optionnel)
+**Artefact**: `lombok`
+**Utilité**: Réduction du boilerplate code (getters, setters, constructors)
+
 ---
 
 ## 🎯 Points Clés à Retenir
@@ -445,7 +449,7 @@ ou `springdoc-openapi-ui` (Spring Boot 2.x)
 
 ---
 
-## 📝 Recommandations pour l'Implémentation
+## 📝 Recommandations pour l'implémentation
 
 ### Architecture
 1. Créer les **Entities** (User, Rental, Message)
