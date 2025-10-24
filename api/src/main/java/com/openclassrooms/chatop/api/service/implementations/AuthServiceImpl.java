@@ -1,4 +1,4 @@
-package com.openclassrooms.chatop.api.service;
+package com.openclassrooms.chatop.api.service.implementations;
 
 import com.openclassrooms.chatop.api.dto.auth.AuthResponse;
 import com.openclassrooms.chatop.api.dto.auth.LoginRequest;
@@ -6,6 +6,8 @@ import com.openclassrooms.chatop.api.dto.auth.RegisterRequest;
 import com.openclassrooms.chatop.api.dto.user.UserDTO;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.UserRepository;
+import com.openclassrooms.chatop.api.service.interfaces.IAuthService;
+import com.openclassrooms.chatop.api.service.interfaces.IJwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,26 +19,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
- * Service handling authentication business logic.
+ * Service implementation handling authentication business logic.
  * Manages user registration, login, and user information retrieval.
  */
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthServiceImpl implements IAuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final IJwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    /**
-     * Register a new user.
-     * Encrypts the password and creates a new user account.
-     *
-     * @param request the registration request containing user details
-     * @return AuthResponse with JWT token
-     * @throws RuntimeException if email already exists
-     */
+    @Override
     public AuthResponse register(RegisterRequest request) {
         // Check if email already exists
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -64,13 +59,7 @@ public class AuthService {
         return new AuthResponse(token);
     }
 
-    /**
-     * Authenticate a user and generate JWT token.
-     *
-     * @param request the login request containing credentials
-     * @return AuthResponse with JWT token
-     * @throws RuntimeException if authentication fails
-     */
+    @Override
     public AuthResponse login(LoginRequest request) {
         // Authenticate the user
         authenticationManager.authenticate(
@@ -96,12 +85,7 @@ public class AuthService {
         return new AuthResponse(token);
     }
 
-    /**
-     * Get current authenticated user information.
-     *
-     * @return UserDTO with user information
-     * @throws RuntimeException if user is not authenticated
-     */
+    @Override
     public UserDTO getCurrentUser() {
         // Get the currently authenticated user from SecurityContext
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -120,13 +104,7 @@ public class AuthService {
         return convertToDTO(user);
     }
 
-    /**
-     * Get user by ID.
-     *
-     * @param id the user ID
-     * @return UserDTO with user information
-     * @throws RuntimeException if user not found
-     */
+    @Override
     public UserDTO getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
@@ -134,12 +112,6 @@ public class AuthService {
         return convertToDTO(user);
     }
 
-    /**
-     * Convert User entity to UserDTO.
-     *
-     * @param user the User entity
-     * @return UserDTO
-     */
     private UserDTO convertToDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());

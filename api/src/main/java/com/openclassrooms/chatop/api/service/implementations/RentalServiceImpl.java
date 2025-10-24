@@ -1,4 +1,4 @@
-package com.openclassrooms.chatop.api.service;
+package com.openclassrooms.chatop.api.service.implementations;
 
 import com.openclassrooms.chatop.api.dto.rental.CreateRentalRequest;
 import com.openclassrooms.chatop.api.dto.rental.RentalDTO;
@@ -6,6 +6,8 @@ import com.openclassrooms.chatop.api.dto.rental.UpdateRentalRequest;
 import com.openclassrooms.chatop.api.model.Rental;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.RentalRepository;
+import com.openclassrooms.chatop.api.service.interfaces.IFileStorageService;
+import com.openclassrooms.chatop.api.service.interfaces.IRentalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,46 +18,30 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Service layer for rental operations.
+ * Service implementation for rental operations.
  * Handles business logic for rental-related functionality.
  */
 @Service
 @RequiredArgsConstructor
-public class RentalService {
+public class RentalServiceImpl implements IRentalService {
 
     private final RentalRepository rentalRepository;
-    private final FileStorageService fileStorageService;
+    private final IFileStorageService fileStorageService;
 
-    /**
-     * Get all rentals.
-     *
-     * @return List of all rentals as DTOs
-     */
+    @Override
     public List<RentalDTO> getAllRentals() {
         return rentalRepository.findAll().stream()
                 .map(RentalDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Get a rental by ID.
-     *
-     * @param id the rental ID
-     * @return Optional containing the RentalDTO if found, empty otherwise
-     */
+    @Override
     public Optional<RentalDTO> getRentalById(Long id) {
         return rentalRepository.findById(id)
                 .map(RentalDTO::fromEntity);
     }
 
-    /**
-     * Create a new rental with an image.
-     *
-     * @param request the rental data
-     * @param picture the rental picture file
-     * @param owner the user creating the rental
-     * @return the created rental as DTO
-     */
+    @Override
     @Transactional
     public RentalDTO createRental(CreateRentalRequest request, MultipartFile picture, User owner) {
         // Store the picture and get its URL
@@ -75,14 +61,7 @@ public class RentalService {
         return RentalDTO.fromEntity(savedRental);
     }
 
-    /**
-     * Update an existing rental.
-     *
-     * @param id the rental ID to update
-     * @param request the updated rental data
-     * @param picture optional new picture file
-     * @return Optional containing the updated rental DTO if found, empty otherwise
-     */
+    @Override
     @Transactional
     public Optional<RentalDTO> updateRental(Long id, UpdateRentalRequest request, Optional<MultipartFile> picture) {
         return rentalRepository.findById(id).map(rental -> {

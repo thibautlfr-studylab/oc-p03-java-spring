@@ -1,5 +1,6 @@
-package com.openclassrooms.chatop.api.service;
+package com.openclassrooms.chatop.api.service.implementations;
 
+import com.openclassrooms.chatop.api.service.interfaces.IFileStorageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -17,17 +18,17 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Service for handling file storage operations.
+ * Service implementation for handling file storage operations.
  * Manages image uploads for rental properties.
  */
 @Service
-public class FileStorageService {
+public class FileStorageServiceImpl implements IFileStorageService {
 
     private final Path fileStorageLocation;
     private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("jpg", "jpeg", "png", "gif", "webp");
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-    public FileStorageService(@Value("${file.upload-dir:uploads}") String uploadDir) {
+    public FileStorageServiceImpl(@Value("${file.upload-dir:uploads}") String uploadDir) {
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.fileStorageLocation);
@@ -36,13 +37,7 @@ public class FileStorageService {
         }
     }
 
-    /**
-     * Store a file and return its URL.
-     *
-     * @param file the file to store
-     * @return the URL to access the file
-     * @throws RuntimeException if file storage fails
-     */
+    @Override
     public String storeFile(MultipartFile file) {
         // Validate file
         validateFile(file);
@@ -67,12 +62,6 @@ public class FileStorageService {
         }
     }
 
-    /**
-     * Validate the uploaded file.
-     *
-     * @param file the file to validate
-     * @throws RuntimeException if validation fails
-     */
     private void validateFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File is empty. Please select a file to upload.");
@@ -93,12 +82,6 @@ public class FileStorageService {
         }
     }
 
-    /**
-     * Get file extension from filename.
-     *
-     * @param filename the filename
-     * @return the file extension
-     */
     private String getFileExtension(String filename) {
         int dotIndex = filename.lastIndexOf('.');
         return (dotIndex == -1) ? "" : filename.substring(dotIndex + 1);
