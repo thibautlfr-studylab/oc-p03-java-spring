@@ -1,7 +1,7 @@
 package com.openclassrooms.chatop.api.controller;
 
 import com.openclassrooms.chatop.api.dto.user.UserDTO;
-import com.openclassrooms.chatop.api.service.UserService;
+import com.openclassrooms.chatop.api.service.interfaces.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Users", description = "User management endpoints")
 public class UserController {
 
-    private final UserService userService;
+    private final IUserService userService;
 
     /**
      * Get user information by ID.

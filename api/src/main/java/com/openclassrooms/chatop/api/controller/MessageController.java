@@ -2,7 +2,7 @@ package com.openclassrooms.chatop.api.controller;
 
 import com.openclassrooms.chatop.api.dto.common.MessageResponse;
 import com.openclassrooms.chatop.api.dto.message.CreateMessageRequest;
-import com.openclassrooms.chatop.api.service.MessageService;
+import com.openclassrooms.chatop.api.service.interfaces.IMessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @SecurityRequirement(name = "bearerAuth")
 public class MessageController {
 
-    private final MessageService messageService;
+    private final IMessageService messageService;
 
     /**
      * Create a new message.

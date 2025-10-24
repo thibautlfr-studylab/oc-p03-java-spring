@@ -4,7 +4,7 @@ import com.openclassrooms.chatop.api.dto.auth.AuthResponse;
 import com.openclassrooms.chatop.api.dto.auth.LoginRequest;
 import com.openclassrooms.chatop.api.dto.auth.RegisterRequest;
 import com.openclassrooms.chatop.api.dto.user.UserDTO;
-import com.openclassrooms.chatop.api.service.AuthService;
+import com.openclassrooms.chatop.api.service.interfaces.IAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Authentication", description = "Authentication and user registration endpoints")
 public class AuthController {
 
-    private final AuthService authService;
+    private final IAuthService authService;
 
     /**
      * Register a new user.

@@ -4,7 +4,7 @@ import com.openclassrooms.chatop.api.dto.rental.*;
 import com.openclassrooms.chatop.api.dto.common.MessageResponse;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.UserRepository;
-import com.openclassrooms.chatop.api.service.RentalService;
+import com.openclassrooms.chatop.api.service.interfaces.IRentalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,7 +35,7 @@ import java.util.Optional;
 @Tag(name = "Rentals", description = "Rental management endpoints")
 public class RentalController {
 
-    private final RentalService rentalService;
+    private final IRentalService rentalService;
     private final UserRepository userRepository;
 
     /**

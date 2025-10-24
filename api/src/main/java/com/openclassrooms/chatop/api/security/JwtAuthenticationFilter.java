@@ -1,6 +1,6 @@
 package com.openclassrooms.chatop.api.security;
 
-import com.openclassrooms.chatop.api.service.JwtService;
+import com.openclassrooms.chatop.api.service.interfaces.IJwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +26,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final IJwtService jwtService;
     private final UserDetailsService userDetailsService;
 
     /**
