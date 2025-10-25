@@ -1,8 +1,8 @@
 package com.openclassrooms.chatop.api.service.implementations;
 
-import com.openclassrooms.chatop.api.dto.rental.CreateRentalRequest;
-import com.openclassrooms.chatop.api.dto.rental.RentalDTO;
-import com.openclassrooms.chatop.api.dto.rental.UpdateRentalRequest;
+import com.openclassrooms.chatop.api.dto.request.RentalRequest.CreateRentalRequest;
+import com.openclassrooms.chatop.api.dto.RentalDTO;
+import com.openclassrooms.chatop.api.dto.request.RentalRequest.UpdateRentalRequest;
 import com.openclassrooms.chatop.api.model.Rental;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.RentalRepository;
@@ -49,11 +49,11 @@ public class RentalServiceImpl implements IRentalService {
 
         // Create rental entity
         Rental rental = new Rental();
-        rental.setName(request.getName());
-        rental.setSurface(request.getSurface());
-        rental.setPrice(request.getPrice());
+        rental.setName(request.name());
+        rental.setSurface(request.surface());
+        rental.setPrice(request.price());
         rental.setPicture(pictureUrl);
-        rental.setDescription(request.getDescription());
+        rental.setDescription(request.description());
         rental.setOwner(owner);
 
         // Save and return
@@ -66,17 +66,17 @@ public class RentalServiceImpl implements IRentalService {
     public Optional<RentalDTO> updateRental(Long id, UpdateRentalRequest request, Optional<MultipartFile> picture) {
         return rentalRepository.findById(id).map(rental -> {
             // Update fields if provided
-            if (request.getName() != null && !request.getName().isEmpty()) {
-                rental.setName(request.getName());
+            if (request.name() != null && !request.name().isEmpty()) {
+                rental.setName(request.name());
             }
-            if (request.getSurface() != null) {
-                rental.setSurface(request.getSurface());
+            if (request.surface() != null) {
+                rental.setSurface(request.surface());
             }
-            if (request.getPrice() != null) {
-                rental.setPrice(request.getPrice());
+            if (request.price() != null) {
+                rental.setPrice(request.price());
             }
-            if (request.getDescription() != null) {
-                rental.setDescription(request.getDescription());
+            if (request.description() != null) {
+                rental.setDescription(request.description());
             }
 
             // Update picture if provided

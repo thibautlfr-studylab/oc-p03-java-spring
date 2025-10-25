@@ -1,6 +1,6 @@
 package com.openclassrooms.chatop.api.controller;
 
-import com.openclassrooms.chatop.api.dto.user.UserDTO;
+import com.openclassrooms.chatop.api.dto.UserDTO;
 import com.openclassrooms.chatop.api.service.interfaces.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

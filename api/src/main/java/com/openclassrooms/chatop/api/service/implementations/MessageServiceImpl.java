@@ -1,6 +1,6 @@
 package com.openclassrooms.chatop.api.service.implementations;
 
-import com.openclassrooms.chatop.api.dto.message.CreateMessageRequest;
+import com.openclassrooms.chatop.api.dto.request.MessageRequest.CreateMessageRequest;
 import com.openclassrooms.chatop.api.model.Message;
 import com.openclassrooms.chatop.api.model.Rental;
 import com.openclassrooms.chatop.api.model.User;
@@ -28,16 +28,16 @@ public class MessageServiceImpl implements IMessageService {
     @Transactional
     public void createMessage(CreateMessageRequest request) {
         // Validate user exists
-        User user = userRepository.findById(request.getUser_id())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + request.getUser_id()));
+        User user = userRepository.findById(request.user_id())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + request.user_id()));
 
         // Validate rental exists
-        Rental rental = rentalRepository.findById(request.getRental_id())
-                .orElseThrow(() -> new IllegalArgumentException("Rental not found with id: " + request.getRental_id()));
+        Rental rental = rentalRepository.findById(request.rental_id())
+                .orElseThrow(() -> new IllegalArgumentException("Rental not found with id: " + request.rental_id()));
 
         // Create message entity
         Message message = new Message();
-        message.setMessage(request.getMessage());
+        message.setMessage(request.message());
         message.setUser(user);
         message.setRental(rental);
 

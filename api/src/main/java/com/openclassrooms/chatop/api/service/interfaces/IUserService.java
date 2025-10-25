@@ -1,6 +1,6 @@
 package com.openclassrooms.chatop.api.service.interfaces;
 
-import com.openclassrooms.chatop.api.dto.user.UserDTO;
+import com.openclassrooms.chatop.api.dto.UserDTO;
 
 import java.util.Optional;
 

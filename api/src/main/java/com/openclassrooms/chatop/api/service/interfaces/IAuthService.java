@@ -1,9 +1,9 @@
 package com.openclassrooms.chatop.api.service.interfaces;
 
-import com.openclassrooms.chatop.api.dto.auth.AuthResponse;
-import com.openclassrooms.chatop.api.dto.auth.LoginRequest;
-import com.openclassrooms.chatop.api.dto.auth.RegisterRequest;
-import com.openclassrooms.chatop.api.dto.user.UserDTO;
+import com.openclassrooms.chatop.api.dto.response.AuthResponse;
+import com.openclassrooms.chatop.api.dto.request.AuthRequest.LoginRequest;
+import com.openclassrooms.chatop.api.dto.request.AuthRequest.RegisterRequest;
+import com.openclassrooms.chatop.api.dto.UserDTO;
 
 /**
  * Service interface for authentication operations.
@@ -37,13 +37,4 @@ public interface IAuthService {
      * @throws RuntimeException if user is not authenticated
      */
     UserDTO getCurrentUser();
-
-    /**
-     * Get user by ID.
-     *
-     * @param id the user ID
-     * @return UserDTO with user information
-     * @throws RuntimeException if user not found
-     */
-    UserDTO getUserById(Long id);
 }

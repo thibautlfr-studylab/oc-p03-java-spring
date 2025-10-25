@@ -1,9 +1,9 @@
 package com.openclassrooms.chatop.api.controller;
 
-import com.openclassrooms.chatop.api.dto.auth.AuthResponse;
-import com.openclassrooms.chatop.api.dto.auth.LoginRequest;
-import com.openclassrooms.chatop.api.dto.auth.RegisterRequest;
-import com.openclassrooms.chatop.api.dto.user.UserDTO;
+import com.openclassrooms.chatop.api.dto.response.AuthResponse;
+import com.openclassrooms.chatop.api.dto.request.AuthRequest.LoginRequest;
+import com.openclassrooms.chatop.api.dto.request.AuthRequest.RegisterRequest;
+import com.openclassrooms.chatop.api.dto.UserDTO;
 import com.openclassrooms.chatop.api.service.interfaces.IAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
