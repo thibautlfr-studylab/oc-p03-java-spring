@@ -180,7 +180,11 @@ public class RentalController {
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             // Create rental
-            rentalService.createRental(request, picture, owner);
+            RentalDTO createdRental = rentalService.createRental(request, picture, owner);
+
+            if (createdRental == null) {
+                throw new RuntimeException("Failed to create rental");
+            }
 
             return ResponseEntity.ok(new SuccessResponse("Rental created !"));
         } catch (Exception e) {
@@ -255,11 +259,13 @@ public class RentalController {
             UpdateRentalRequest request = new UpdateRentalRequest(name, surface, price, description);
 
             // Update rental
-            Optional<RentalDTO> updated = rentalService.updateRental(id, request, Optional.ofNullable(picture));
+            Optional<RentalDTO> updatedRental = rentalService.updateRental(id, request, picture);
 
-            return updated
-                    .map(rental -> ResponseEntity.ok(new SuccessResponse("Rental updated !")))
-                    .orElse(ResponseEntity.notFound().build());
+            if (updatedRental.isPresent()) {
+                return ResponseEntity.ok(new SuccessResponse("Rental updated !"));
+            } else {
+                return ResponseEntity.notFound().build();
+            }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new SuccessResponse(e.getMessage()));
         }

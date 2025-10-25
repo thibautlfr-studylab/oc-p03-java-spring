@@ -45,8 +45,8 @@ public interface IRentalService {
      *
      * @param id the rental ID to update
      * @param request the updated rental data
-     * @param picture optional new picture file
+     * @param picture optional new picture file (can be null)
      * @return Optional containing the updated rental DTO if found, empty otherwise
      */
-    Optional<RentalDTO> updateRental(Long id, UpdateRentalRequest request, Optional<MultipartFile> picture);
+    Optional<RentalDTO> updateRental(Long id, UpdateRentalRequest request, MultipartFile picture);
 }

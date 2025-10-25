@@ -63,7 +63,7 @@ public class RentalServiceImpl implements IRentalService {
 
     @Override
     @Transactional
-    public Optional<RentalDTO> updateRental(Long id, UpdateRentalRequest request, Optional<MultipartFile> picture) {
+    public Optional<RentalDTO> updateRental(Long id, UpdateRentalRequest request, MultipartFile picture) {
         return rentalRepository.findById(id).map(rental -> {
             // Update fields if provided
             if (request.name() != null && !request.name().isEmpty()) {
@@ -80,12 +80,10 @@ public class RentalServiceImpl implements IRentalService {
             }
 
             // Update picture if provided
-            picture.ifPresent(file -> {
-                if (!file.isEmpty()) {
-                    String pictureUrl = fileStorageService.storeFile(file);
-                    rental.setPicture(pictureUrl);
-                }
-            });
+            if (picture != null && !picture.isEmpty()) {
+                String pictureUrl = fileStorageService.storeFile(picture);
+                rental.setPicture(pictureUrl);
+            }
 
             // Save and return
             Rental updatedRental = rentalRepository.save(rental);
