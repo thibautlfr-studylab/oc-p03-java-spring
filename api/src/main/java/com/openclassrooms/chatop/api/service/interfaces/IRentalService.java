@@ -1,8 +1,8 @@
 package com.openclassrooms.chatop.api.service.interfaces;
 
-import com.openclassrooms.chatop.api.dto.rental.CreateRentalRequest;
-import com.openclassrooms.chatop.api.dto.rental.RentalDTO;
-import com.openclassrooms.chatop.api.dto.rental.UpdateRentalRequest;
+import com.openclassrooms.chatop.api.dto.request.RentalRequest.CreateRentalRequest;
+import com.openclassrooms.chatop.api.dto.RentalDTO;
+import com.openclassrooms.chatop.api.dto.request.RentalRequest.UpdateRentalRequest;
 import com.openclassrooms.chatop.api.model.User;
 import org.springframework.web.multipart.MultipartFile;
 

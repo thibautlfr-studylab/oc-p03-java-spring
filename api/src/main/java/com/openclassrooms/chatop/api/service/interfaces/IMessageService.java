@@ -1,6 +1,6 @@
 package com.openclassrooms.chatop.api.service.interfaces;
 
-import com.openclassrooms.chatop.api.dto.message.CreateMessageRequest;
+import com.openclassrooms.chatop.api.dto.request.MessageRequest.CreateMessageRequest;
 
 /**
  * Service interface for message operations.

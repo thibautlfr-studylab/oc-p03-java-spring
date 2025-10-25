@@ -1,9 +1,9 @@
 package com.openclassrooms.chatop.api.service.implementations;
 
-import com.openclassrooms.chatop.api.dto.auth.AuthResponse;
-import com.openclassrooms.chatop.api.dto.auth.LoginRequest;
-import com.openclassrooms.chatop.api.dto.auth.RegisterRequest;
-import com.openclassrooms.chatop.api.dto.user.UserDTO;
+import com.openclassrooms.chatop.api.dto.response.AuthResponse;
+import com.openclassrooms.chatop.api.dto.request.AuthRequest.LoginRequest;
+import com.openclassrooms.chatop.api.dto.request.AuthRequest.RegisterRequest;
+import com.openclassrooms.chatop.api.dto.UserDTO;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.UserRepository;
 import com.openclassrooms.chatop.api.service.interfaces.IAuthService;
@@ -34,15 +34,15 @@ public class AuthServiceImpl implements IAuthService {
     @Override
     public AuthResponse register(RegisterRequest request) {
         // Check if email already exists
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.email())) {
             throw new RuntimeException("Email already registered");
         }
 
         // Create new user
         User user = new User();
-        user.setEmail(request.getEmail());
-        user.setName(request.getName());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.email());
+        user.setName(request.name());
+        user.setPassword(passwordEncoder.encode(request.password()));
 
         // Save user to database
         userRepository.save(user);
@@ -64,13 +64,13 @@ public class AuthServiceImpl implements IAuthService {
         // Authenticate the user
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
+                        request.email(),
+                        request.password()
                 )
         );
 
         // Load user details
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // Generate JWT token
@@ -100,25 +100,7 @@ public class AuthServiceImpl implements IAuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // Convert to DTO
-        return convertToDTO(user);
-    }
-
-    @Override
-    public UserDTO getUserById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-
-        return convertToDTO(user);
-    }
-
-    private UserDTO convertToDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setCreated_at(user.getCreatedAt());
-        dto.setUpdated_at(user.getUpdatedAt());
-        return dto;
+        // Convert to DTO using fromEntity
+        return UserDTO.fromEntity(user);
     }
 }

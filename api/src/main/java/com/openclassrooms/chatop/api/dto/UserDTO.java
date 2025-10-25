@@ -1,11 +1,8 @@
-package com.openclassrooms.chatop.api.dto.user;
+package com.openclassrooms.chatop.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.openclassrooms.chatop.api.model.User;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -13,29 +10,25 @@ import java.time.LocalDateTime;
  * DTO for user information responses.
  * Used to expose user data without revealing sensitive information like passwords.
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Schema(description = "User information")
-public class UserDTO {
+public record UserDTO(
+        @Schema(description = "User's unique identifier", example = "1")
+        Long id,
 
-    @Schema(description = "User's unique identifier", example = "1")
-    private Long id;
+        @Schema(description = "User's full name", example = "John Doe")
+        String name,
 
-    @Schema(description = "User's full name", example = "John Doe")
-    private String name;
+        @Schema(description = "User's email address", example = "user@example.com")
+        String email,
 
-    @Schema(description = "User's email address", example = "user@example.com")
-    private String email;
+        @JsonFormat(pattern = "yyyy/MM/dd")
+        @Schema(description = "Account creation date", example = "2024/01/15")
+        LocalDateTime created_at,
 
-    @JsonFormat(pattern = "yyyy/MM/dd")
-    @Schema(description = "Account creation date", example = "2024/01/15")
-    private LocalDateTime created_at;
-
-    @JsonFormat(pattern = "yyyy/MM/dd")
-    @Schema(description = "Last account update date", example = "2024/01/15")
-    private LocalDateTime updated_at;
-
+        @JsonFormat(pattern = "yyyy/MM/dd")
+        @Schema(description = "Last account update date", example = "2024/01/15")
+        LocalDateTime updated_at
+) {
     /**
      * Convert a User entity to a UserDTO.
      * This method ensures that sensitive information (like password) is never exposed.

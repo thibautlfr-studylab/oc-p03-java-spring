@@ -1,7 +1,10 @@
 package com.openclassrooms.chatop.api.controller;
 
-import com.openclassrooms.chatop.api.dto.rental.*;
-import com.openclassrooms.chatop.api.dto.common.MessageResponse;
+import com.openclassrooms.chatop.api.dto.RentalDTO;
+import com.openclassrooms.chatop.api.dto.request.RentalRequest.CreateRentalRequest;
+import com.openclassrooms.chatop.api.dto.request.RentalRequest.UpdateRentalRequest;
+import com.openclassrooms.chatop.api.dto.response.RentalListResponse;
+import com.openclassrooms.chatop.api.dto.response.SuccessResponse;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.UserRepository;
 import com.openclassrooms.chatop.api.service.interfaces.IRentalService;
@@ -136,7 +139,7 @@ public class RentalController {
                     description = "Rental created successfully",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = MessageResponse.class)
+                            schema = @Schema(implementation = SuccessResponse.class)
                     )
             ),
             @ApiResponse(
@@ -179,9 +182,9 @@ public class RentalController {
             // Create rental
             rentalService.createRental(request, picture, owner);
 
-            return ResponseEntity.ok(new MessageResponse("Rental created !"));
+            return ResponseEntity.ok(new SuccessResponse("Rental created !"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+            return ResponseEntity.badRequest().body(new SuccessResponse(e.getMessage()));
         }
     }
 
@@ -209,7 +212,7 @@ public class RentalController {
                     description = "Rental updated successfully",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = MessageResponse.class)
+                            schema = @Schema(implementation = SuccessResponse.class)
                     )
             ),
             @ApiResponse(
@@ -255,10 +258,10 @@ public class RentalController {
             Optional<RentalDTO> updated = rentalService.updateRental(id, request, Optional.ofNullable(picture));
 
             return updated
-                    .map(rental -> ResponseEntity.ok(new MessageResponse("Rental updated !")))
+                    .map(rental -> ResponseEntity.ok(new SuccessResponse("Rental updated !")))
                     .orElse(ResponseEntity.notFound().build());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+            return ResponseEntity.badRequest().body(new SuccessResponse(e.getMessage()));
         }
     }
 }
