@@ -3,8 +3,10 @@ package com.openclassrooms.chatop.api.controller;
 import com.openclassrooms.chatop.api.dto.RentalDTO;
 import com.openclassrooms.chatop.api.dto.request.RentalRequest.CreateRentalRequest;
 import com.openclassrooms.chatop.api.dto.request.RentalRequest.UpdateRentalRequest;
+import com.openclassrooms.chatop.api.dto.response.ErrorResponse;
 import com.openclassrooms.chatop.api.dto.response.RentalListResponse;
 import com.openclassrooms.chatop.api.dto.response.SuccessResponse;
+import com.openclassrooms.chatop.api.exception.ResourceNotFoundException;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.UserRepository;
 import com.openclassrooms.chatop.api.service.interfaces.IRentalService;
@@ -26,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * REST controller for rental endpoints.
@@ -98,21 +99,27 @@ public class RentalController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized - Invalid or missing JWT token",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Rental not found",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             )
     })
     public ResponseEntity<RentalDTO> getRentalById(
             @Parameter(description = "Rental ID", required = true, example = "1")
             @PathVariable Long id
     ) {
-        return rentalService.getRentalById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        RentalDTO rental = rentalService.getRentalById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Rental", "id", id));
+        return ResponseEntity.ok(rental);
     }
 
     /**
@@ -144,16 +151,22 @@ public class RentalController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Bad request - Invalid input data or missing fields",
-                    content = @Content
+                    description = "Bad request - Invalid input data, missing fields, or invalid file",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized - Invalid or missing JWT token",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             )
     })
-    public ResponseEntity<?> createRental(
+    public ResponseEntity<SuccessResponse> createRental(
             @Parameter(description = "Rental name", required = true)
             @RequestParam("name") String name,
 
@@ -171,25 +184,17 @@ public class RentalController {
 
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        try {
-            // Create request DTO
-            CreateRentalRequest request = new CreateRentalRequest(name, surface, price, description);
+        // Create request DTO
+        CreateRentalRequest request = new CreateRentalRequest(name, surface, price, description);
 
-            // Get the authenticated user from UserRepository
-            User owner = userRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+        // Get the authenticated user from UserRepository
+        User owner = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", userDetails.getUsername()));
 
-            // Create rental
-            RentalDTO createdRental = rentalService.createRental(request, picture, owner);
+        // Create rental (validation happens in service layer)
+        rentalService.createRental(request, picture, owner);
 
-            if (createdRental == null) {
-                throw new RuntimeException("Failed to create rental");
-            }
-
-            return ResponseEntity.ok(new SuccessResponse("Rental created !"));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new SuccessResponse(e.getMessage()));
-        }
+        return ResponseEntity.ok(new SuccessResponse("Rental created !"));
     }
 
     /**
@@ -221,21 +226,30 @@ public class RentalController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Bad request - Invalid input data",
-                    content = @Content
+                    description = "Bad request - Invalid input data or invalid file",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized - Invalid or missing JWT token",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Rental not found",
-                    content = @Content
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             )
     })
-    public ResponseEntity<?> updateRental(
+    public ResponseEntity<SuccessResponse> updateRental(
             @Parameter(description = "Rental ID", required = true, example = "1")
             @PathVariable Long id,
 
@@ -254,20 +268,13 @@ public class RentalController {
             @Parameter(description = "New rental picture file")
             @RequestParam(value = "picture", required = false) MultipartFile picture
     ) {
-        try {
-            // Create request DTO
-            UpdateRentalRequest request = new UpdateRentalRequest(name, surface, price, description);
+        // Create request DTO
+        UpdateRentalRequest request = new UpdateRentalRequest(name, surface, price, description);
 
-            // Update rental
-            Optional<RentalDTO> updatedRental = rentalService.updateRental(id, request, picture);
+        // Update rental (validation happens in service layer)
+        rentalService.updateRental(id, request, picture)
+                .orElseThrow(() -> new ResourceNotFoundException("Rental", "id", id));
 
-            if (updatedRental.isPresent()) {
-                return ResponseEntity.ok(new SuccessResponse("Rental updated !"));
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new SuccessResponse(e.getMessage()));
-        }
+        return ResponseEntity.ok(new SuccessResponse("Rental updated !"));
     }
 }
