@@ -23,7 +23,8 @@ public class AuthRequest {
             @NotBlank(message = "Password is required")
             @Schema(description = "User's password", example = "SecurePass123!")
             String password
-    ) {}
+    ) {
+    }
 
     /**
      * DTO for user registration requests.
@@ -43,5 +44,6 @@ public class AuthRequest {
             @NotBlank(message = "Password is required")
             @Schema(description = "User's password", example = "SecurePass123!")
             String password
-    ) {}
+    ) {
+    }
 }

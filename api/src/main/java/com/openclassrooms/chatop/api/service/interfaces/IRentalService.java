@@ -1,7 +1,7 @@
 package com.openclassrooms.chatop.api.service.interfaces;
 
-import com.openclassrooms.chatop.api.dto.request.RentalRequest.CreateRentalRequest;
 import com.openclassrooms.chatop.api.dto.RentalDTO;
+import com.openclassrooms.chatop.api.dto.request.RentalRequest.CreateRentalRequest;
 import com.openclassrooms.chatop.api.dto.request.RentalRequest.UpdateRentalRequest;
 import com.openclassrooms.chatop.api.model.User;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,15 +35,14 @@ public interface IRentalService {
      *
      * @param request the rental data
      * @param picture the rental picture file
-     * @param owner the user creating the rental
-     * @return the created rental as DTO
+     * @param owner   the user creating the rental
      */
-    RentalDTO createRental(CreateRentalRequest request, MultipartFile picture, User owner);
+    void createRental(CreateRentalRequest request, MultipartFile picture, User owner);
 
     /**
      * Update an existing rental.
      *
-     * @param id the rental ID to update
+     * @param id      the rental ID to update
      * @param request the updated rental data
      * @param picture optional new picture file (can be null)
      * @return Optional containing the updated rental DTO if found, empty otherwise

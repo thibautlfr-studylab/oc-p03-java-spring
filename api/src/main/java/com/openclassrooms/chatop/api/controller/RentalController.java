@@ -126,11 +126,11 @@ public class RentalController {
      * Create a new rental.
      * Creates a new rental property with an image.
      *
-     * @param name rental name
-     * @param surface rental surface in square meters
-     * @param price rental price per night
+     * @param name        rental name
+     * @param surface     rental surface in square meters
+     * @param price       rental price per night
      * @param description rental description
-     * @param picture rental picture file
+     * @param picture     rental picture file
      * @param userDetails authenticated user
      * @return ResponseEntity with success message
      */
@@ -192,7 +192,7 @@ public class RentalController {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", userDetails.getUsername()));
 
         // Create rental (validation happens in the service layer)
-        RentalDTO createdRental = rentalService.createRental(request, picture, owner);
+        rentalService.createRental(request, picture, owner);
 
         return ResponseEntity.ok(new SuccessResponse("Rental created !"));
     }
@@ -201,12 +201,12 @@ public class RentalController {
      * Update an existing rental.
      * Updates rental details, optionally including a new image.
      *
-     * @param id rental ID to update
-     * @param name new rental name
-     * @param surface new rental surface
-     * @param price new rental price
+     * @param id          rental ID to update
+     * @param name        new rental name
+     * @param surface     new rental surface
+     * @param price       new rental price
      * @param description new rental description
-     * @param picture optional new rental picture
+     * @param picture     optional new rental picture
      * @return ResponseEntity with success message if updated, 404 if not found
      */
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

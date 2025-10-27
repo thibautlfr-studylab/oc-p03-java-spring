@@ -1,7 +1,7 @@
 package com.openclassrooms.chatop.api.controller;
 
-import com.openclassrooms.chatop.api.dto.response.SuccessResponse;
 import com.openclassrooms.chatop.api.dto.request.MessageRequest.CreateMessageRequest;
+import com.openclassrooms.chatop.api.dto.response.SuccessResponse;
 import com.openclassrooms.chatop.api.service.interfaces.IMessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

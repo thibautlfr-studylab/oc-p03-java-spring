@@ -37,7 +37,8 @@ public class RentalRequest {
             @Size(max = 2000, message = "Description must not exceed 2000 characters")
             @Schema(description = "Property description", example = "Beautiful apartment with ocean view, 2 bedrooms, fully equipped kitchen")
             String description
-    ) {}
+    ) {
+    }
 
     /**
      * DTO for updating an existing rental.
@@ -60,5 +61,6 @@ public class RentalRequest {
             @Size(max = 2000, message = "Description must not exceed 2000 characters")
             @Schema(description = "Property description", example = "Recently renovated apartment with new amenities")
             String description
-    ) {}
+    ) {
+    }
 }
