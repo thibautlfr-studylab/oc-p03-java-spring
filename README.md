@@ -84,7 +84,7 @@ cp .env.example .env
 
 Backend will start on **http://localhost:3001**
 
-API Documentation (Swagger): **http://localhost:3001/swagger-ui/index.html**
+API Documentation (Swagger): **http://localhost:3001/api/swagger-ui/index.html**
 
 ### 3. Frontend Setup (Port 4200)
 
@@ -242,7 +242,7 @@ If port 4200 is in use, Angular will prompt for an alternative port.
 - Ensure backend is running on port 3001
 - Check browser console for errors
 - Verify JWT token in localStorage
-- Check Swagger UI for API status: http://localhost:3001/swagger-ui/index.html
+- Check Swagger UI for API status: http://localhost:3001/api/swagger-ui/index.html
 
 ### More Troubleshooting
 

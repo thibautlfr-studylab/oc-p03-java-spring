@@ -278,7 +278,7 @@ This provides:
 
 Access the raw OpenAPI JSON:
 
-**OpenAPI JSON**: [http://localhost:3001/api/docs](http://localhost:3001/api/docs)
+**OpenAPI JSON**: [http://localhost:3001/api/v3/api-docs](http://localhost:3001/api/v3/api-docs)
 
 ---
 
