@@ -1,6 +1,7 @@
 package com.openclassrooms.chatop.api.service.implementations;
 
 import com.openclassrooms.chatop.api.dto.request.MessageRequest.CreateMessageRequest;
+import com.openclassrooms.chatop.api.exception.ResourceNotFoundException;
 import com.openclassrooms.chatop.api.model.Message;
 import com.openclassrooms.chatop.api.model.Rental;
 import com.openclassrooms.chatop.api.model.User;
@@ -29,11 +30,11 @@ public class MessageServiceImpl implements IMessageService {
     public void createMessage(CreateMessageRequest request) {
         // Validate user exists
         User user = userRepository.findById(request.user_id())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + request.user_id()));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.user_id()));
 
         // Validate rental exists
         Rental rental = rentalRepository.findById(request.rental_id())
-                .orElseThrow(() -> new IllegalArgumentException("Rental not found with id: " + request.rental_id()));
+                .orElseThrow(() -> new ResourceNotFoundException("Rental", "id", request.rental_id()));
 
         // Create message entity
         Message message = new Message();

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 
@@ -19,6 +20,7 @@ public class RentalRequest {
     @Schema(description = "Request to create a new rental property")
     public record CreateRentalRequest(
             @NotBlank(message = "Name is required")
+            @Size(max = 255, message = "Name must not exceed 255 characters")
             @Schema(description = "Property name", example = "Charming seaside apartment")
             String name,
 
@@ -32,6 +34,7 @@ public class RentalRequest {
             @Schema(description = "Rental price per night", example = "150.00")
             BigDecimal price,
 
+            @Size(max = 2000, message = "Description must not exceed 2000 characters")
             @Schema(description = "Property description", example = "Beautiful apartment with ocean view, 2 bedrooms, fully equipped kitchen")
             String description
     ) {}
@@ -42,6 +45,7 @@ public class RentalRequest {
      */
     @Schema(description = "Request to update an existing rental property (all fields optional)")
     public record UpdateRentalRequest(
+            @Size(max = 255, message = "Name must not exceed 255 characters")
             @Schema(description = "Property name", example = "Updated apartment name")
             String name,
 
@@ -53,6 +57,7 @@ public class RentalRequest {
             @Schema(description = "Rental price per night", example = "175.00")
             BigDecimal price,
 
+            @Size(max = 2000, message = "Description must not exceed 2000 characters")
             @Schema(description = "Property description", example = "Recently renovated apartment with new amenities")
             String description
     ) {}

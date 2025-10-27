@@ -4,6 +4,8 @@ import com.openclassrooms.chatop.api.dto.response.AuthResponse;
 import com.openclassrooms.chatop.api.dto.request.AuthRequest.LoginRequest;
 import com.openclassrooms.chatop.api.dto.request.AuthRequest.RegisterRequest;
 import com.openclassrooms.chatop.api.dto.UserDTO;
+import com.openclassrooms.chatop.api.exception.ResourceAlreadyExistsException;
+import com.openclassrooms.chatop.api.exception.ResourceNotFoundException;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.UserRepository;
 import com.openclassrooms.chatop.api.service.interfaces.IAuthService;
@@ -35,7 +37,7 @@ public class AuthServiceImpl implements IAuthService {
     public AuthResponse register(RegisterRequest request) {
         // Check if email already exists
         if (userRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("Email already registered");
+            throw new ResourceAlreadyExistsException("User", "email", request.email());
         }
 
         // Create new user
@@ -91,14 +93,14 @@ public class AuthServiceImpl implements IAuthService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("No authenticated user found");
+            throw new UsernameNotFoundException("No authenticated user found");
         }
 
         String email = authentication.getName();
 
         // Find user in database
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
 
         // Convert to DTO using fromEntity
         return UserDTO.fromEntity(user);

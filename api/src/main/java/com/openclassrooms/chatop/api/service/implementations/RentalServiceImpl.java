@@ -3,6 +3,7 @@ package com.openclassrooms.chatop.api.service.implementations;
 import com.openclassrooms.chatop.api.dto.request.RentalRequest.CreateRentalRequest;
 import com.openclassrooms.chatop.api.dto.RentalDTO;
 import com.openclassrooms.chatop.api.dto.request.RentalRequest.UpdateRentalRequest;
+import com.openclassrooms.chatop.api.exception.BusinessValidationException;
 import com.openclassrooms.chatop.api.model.Rental;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.RentalRepository;
@@ -44,7 +45,12 @@ public class RentalServiceImpl implements IRentalService {
     @Override
     @Transactional
     public RentalDTO createRental(CreateRentalRequest request, MultipartFile picture, User owner) {
-        // Store the picture and get its URL
+        // Validate picture is provided (required for creation)
+        if (picture == null || picture.isEmpty()) {
+            throw new BusinessValidationException("An image is required to create a rental listing");
+        }
+
+        // Store the picture and get its URL (validation happens in FileStorageService)
         String pictureUrl = fileStorageService.storeFile(picture);
 
         // Create rental entity
@@ -65,8 +71,21 @@ public class RentalServiceImpl implements IRentalService {
     @Transactional
     public Optional<RentalDTO> updateRental(Long id, UpdateRentalRequest request, MultipartFile picture) {
         return rentalRepository.findById(id).map(rental -> {
+            // Validate that at least one field is being updated
+            boolean requestName = request.name() != null && !request.name().isEmpty();
+
+            boolean hasUpdate = requestName ||
+                                request.surface() != null ||
+                                request.price() != null ||
+                                request.description() != null ||
+                                (picture != null && !picture.isEmpty());
+
+            if (!hasUpdate) {
+                throw new BusinessValidationException("At least one field must be provided for the update");
+            }
+
             // Update fields if provided
-            if (request.name() != null && !request.name().isEmpty()) {
+            if (requestName) {
                 rental.setName(request.name());
             }
             if (request.surface() != null) {
@@ -79,7 +98,7 @@ public class RentalServiceImpl implements IRentalService {
                 rental.setDescription(request.description());
             }
 
-            // Update picture if provided
+            // Update the picture if provided (validation happens in FileStorageService)
             if (picture != null && !picture.isEmpty()) {
                 String pictureUrl = fileStorageService.storeFile(picture);
                 rental.setPicture(pictureUrl);
