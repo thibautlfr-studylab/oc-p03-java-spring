@@ -49,7 +49,7 @@ The API is designed to work seamlessly with an Angular 14 frontend (available in
 | **Spring Data JPA** | 3.x | Database ORM |
 | **MySQL** | 8.0+ | Relational database |
 | **JJWT** | 0.12.3 | JWT token generation/validation |
-| **Springdoc OpenAPI** | 2.3.0 | API documentation |
+| **Springdoc OpenAPI** | 2.7.0 | API documentation |
 | **Lombok** | Latest | Boilerplate code reduction |
 | **Maven** | 3.6+ | Build tool |
 
@@ -388,48 +388,84 @@ curl -X POST http://localhost:3001/api/rentals \
 api/
 ├── src/
 │   ├── main/
-│   │   ├── java/com/openclassrooms/chatop/
-│   │   │   ├── config/              # Configuration classes
-│   │   │   │   ├── JwtAuthenticationFilter.java
-│   │   │   │   ├── SecurityConfig.java
-│   │   │   │   └── SwaggerConfig.java
-│   │   │   ├── controller/          # REST controllers
-│   │   │   │   ├── AuthController.java
-│   │   │   │   ├── RentalController.java
-│   │   │   │   ├── MessageController.java
-│   │   │   │   └── UserController.java
-│   │   │   ├── dto/                 # Data Transfer Objects
-│   │   │   │   ├── request/
-│   │   │   │   └── response/
-│   │   │   ├── entity/              # JPA entities
-│   │   │   │   ├── User.java
-│   │   │   │   ├── Rental.java
-│   │   │   │   └── Message.java
-│   │   │   ├── repository/          # Spring Data repositories
-│   │   │   │   ├── UserRepository.java
-│   │   │   │   ├── RentalRepository.java
-│   │   │   │   └── MessageRepository.java
-│   │   │   ├── service/             # Business logic
-│   │   │   │   ├── AuthService.java
-│   │   │   │   ├── JwtService.java
-│   │   │   │   ├── RentalService.java
-│   │   │   │   ├── MessageService.java
-│   │   │   │   └── UserService.java
-│   │   │   ├── exception/           # Custom exceptions
-│   │   │   └── ApiApplication.java  # Main application
+│   │   ├── java/com/openclassrooms/chatop/api/
+│   │   │   ├── config/                    # Configuration classes
+│   │   │   │   ├── SecurityConfig.java       # Spring Security + JWT configuration
+│   │   │   │   ├── SwaggerConfig.java        # OpenAPI/Swagger documentation setup
+│   │   │   │   └── WebConfig.java            # CORS and web MVC configuration
+│   │   │   │
+│   │   │   ├── controller/                # REST API endpoints
+│   │   │   │   ├── AuthController.java       # Authentication (register/login/me)
+│   │   │   │   ├── RentalController.java     # Rental CRUD operations
+│   │   │   │   ├── MessageController.java    # Message sending
+│   │   │   │   └── UserController.java       # User information
+│   │   │   │
+│   │   │   ├── dto/                       # Data Transfer Objects (API contracts)
+│   │   │   │   ├── request/                  # API request DTOs
+│   │   │   │   │   ├── AuthRequest.java         # Login/register credentials
+│   │   │   │   │   ├── MessageRequest.java      # Message creation
+│   │   │   │   │   └── RentalRequest.java       # Rental creation/update
+│   │   │   │   ├── response/                 # API response DTOs
+│   │   │   │   │   ├── AuthResponse.java        # JWT token response
+│   │   │   │   │   ├── ErrorResponse.java       # Error messages
+│   │   │   │   │   ├── RentalListResponse.java  # Rentals list wrapper
+│   │   │   │   │   └── SuccessResponse.java     # Success messages
+│   │   │   │   ├── RentalDTO.java            # Rental data representation
+│   │   │   │   └── UserDTO.java              # User data representation
+│   │   │   │
+│   │   │   ├── exception/                 # Custom exceptions and global handler
+│   │   │   │   ├── GlobalExceptionHandler.java  # Centralized error handling
+│   │   │   │   ├── BusinessValidationException.java
+│   │   │   │   ├── InvalidFileException.java
+│   │   │   │   ├── ResourceAlreadyExistsException.java
+│   │   │   │   └── ResourceNotFoundException.java
+│   │   │   │
+│   │   │   ├── model/                     # JPA entities (database tables)
+│   │   │   │   ├── User.java                 # USERS table
+│   │   │   │   ├── Rental.java               # RENTALS table
+│   │   │   │   └── Message.java              # MESSAGES table
+│   │   │   │
+│   │   │   ├── repository/                # Data access layer
+│   │   │   │   ├── UserRepository.java       # User queries
+│   │   │   │   ├── RentalRepository.java     # Rental queries
+│   │   │   │   └── MessageRepository.java    # Message queries
+│   │   │   │
+│   │   │   ├── security/                  # JWT authentication
+│   │   │   │   └── JwtAuthenticationFilter.java # Token validation filter
+│   │   │   │
+│   │   │   ├── service/                   # Business logic layer
+│   │   │   │   ├── interfaces/               # Service contracts
+│   │   │   │   │   ├── IAuthService.java
+│   │   │   │   │   ├── IJwtService.java
+│   │   │   │   │   ├── IRentalService.java
+│   │   │   │   │   ├── IMessageService.java
+│   │   │   │   │   ├── IUserService.java
+│   │   │   │   │   └── IFileStorageService.java
+│   │   │   │   ├── implementations/          # Service implementations
+│   │   │   │   │   ├── AuthServiceImpl.java     # Authentication logic
+│   │   │   │   │   ├── JwtServiceImpl.java      # JWT token generation/validation
+│   │   │   │   │   ├── RentalServiceImpl.java   # Rental business logic
+│   │   │   │   │   ├── MessageServiceImpl.java  # Message handling
+│   │   │   │   │   ├── UserServiceImpl.java     # User management
+│   │   │   │   │   └── FileStorageServiceImpl.java # Image upload/storage
+│   │   │   │   └── CustomUserDetailsService.java # Spring Security user details
+│   │   │   │
+│   │   │   └── ApiApplication.java        # Spring Boot main application
+│   │   │
 │   │   └── resources/
-│   │       ├── application.properties
-│   │       ├── static/
-│   │       └── templates/
-│   └── test/                        # Unit and integration tests
-├── uploads/                         # Uploaded images directory
-├── .env                             # Environment variables (not committed)
-├── .env.example                     # Environment template
-├── pom.xml                          # Maven dependencies
-└── README.md                        # This file
+│   │       ├── application.properties     # Application configuration
+│   │       ├── static/                    # Static resources (images)
+│   │       └── templates/                 # Email templates (if needed)
+│   │
+│   └── test/                              # Unit and integration tests
+│       └── java/com/openclassrooms/chatop/api/
+│
+├── uploads/                               # Uploaded images directory (runtime)
+├── .env                                   # Environment variables (not committed)
+├── .env.example                           # Environment template
+├── pom.xml                                # Maven dependencies
+└── README.md                              # This file
 ```
-
----
 
 ## Development
 
