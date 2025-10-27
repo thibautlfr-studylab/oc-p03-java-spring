@@ -1,7 +1,7 @@
 package com.openclassrooms.chatop.api.service.implementations;
 
-import com.openclassrooms.chatop.api.dto.request.RentalRequest.CreateRentalRequest;
 import com.openclassrooms.chatop.api.dto.RentalDTO;
+import com.openclassrooms.chatop.api.dto.request.RentalRequest.CreateRentalRequest;
 import com.openclassrooms.chatop.api.dto.request.RentalRequest.UpdateRentalRequest;
 import com.openclassrooms.chatop.api.exception.BusinessValidationException;
 import com.openclassrooms.chatop.api.model.Rental;
@@ -44,7 +44,7 @@ public class RentalServiceImpl implements IRentalService {
 
     @Override
     @Transactional
-    public RentalDTO createRental(CreateRentalRequest request, MultipartFile picture, User owner) {
+    public void createRental(CreateRentalRequest request, MultipartFile picture, User owner) {
         // Validate picture is provided (required for creation)
         if (picture == null || picture.isEmpty()) {
             throw new BusinessValidationException("An image is required to create a rental listing");
@@ -62,9 +62,8 @@ public class RentalServiceImpl implements IRentalService {
         rental.setDescription(request.description());
         rental.setOwner(owner);
 
-        // Save and return
-        Rental savedRental = rentalRepository.save(rental);
-        return RentalDTO.fromEntity(savedRental);
+        // Save
+        rentalRepository.save(rental);
     }
 
     @Override
@@ -75,10 +74,10 @@ public class RentalServiceImpl implements IRentalService {
             boolean requestName = request.name() != null && !request.name().isEmpty();
 
             boolean hasUpdate = requestName ||
-                                request.surface() != null ||
-                                request.price() != null ||
-                                request.description() != null ||
-                                (picture != null && !picture.isEmpty());
+                    request.surface() != null ||
+                    request.price() != null ||
+                    request.description() != null ||
+                    (picture != null && !picture.isEmpty());
 
             if (!hasUpdate) {
                 throw new BusinessValidationException("At least one field must be provided for the update");

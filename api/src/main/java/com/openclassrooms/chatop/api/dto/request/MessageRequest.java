@@ -28,5 +28,6 @@ public class MessageRequest {
             @Size(max = 2000, message = "Message must not exceed 2000 characters")
             @Schema(description = "Message content", example = "I'm interested in this property. Is it still available?")
             String message
-    ) {}
+    ) {
+    }
 }

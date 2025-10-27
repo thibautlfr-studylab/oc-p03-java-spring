@@ -10,4 +10,5 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record SuccessResponse(
         @Schema(description = "Success or status message", example = "Rental created !")
         String message
-) {}
+) {
+}

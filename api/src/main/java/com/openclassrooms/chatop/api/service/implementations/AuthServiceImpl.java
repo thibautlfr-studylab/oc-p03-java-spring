@@ -1,9 +1,9 @@
 package com.openclassrooms.chatop.api.service.implementations;
 
-import com.openclassrooms.chatop.api.dto.response.AuthResponse;
+import com.openclassrooms.chatop.api.dto.UserDTO;
 import com.openclassrooms.chatop.api.dto.request.AuthRequest.LoginRequest;
 import com.openclassrooms.chatop.api.dto.request.AuthRequest.RegisterRequest;
-import com.openclassrooms.chatop.api.dto.UserDTO;
+import com.openclassrooms.chatop.api.dto.response.AuthResponse;
 import com.openclassrooms.chatop.api.exception.ResourceAlreadyExistsException;
 import com.openclassrooms.chatop.api.exception.ResourceNotFoundException;
 import com.openclassrooms.chatop.api.model.User;

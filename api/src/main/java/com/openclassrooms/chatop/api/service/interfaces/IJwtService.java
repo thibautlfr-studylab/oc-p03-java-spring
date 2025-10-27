@@ -23,7 +23,7 @@ public interface IJwtService {
     /**
      * Extract a specific claim from the JWT token.
      *
-     * @param token the JWT token
+     * @param token          the JWT token
      * @param claimsResolver function to extract the desired claim
      * @return the extracted claim
      */
@@ -49,7 +49,7 @@ public interface IJwtService {
     /**
      * Validate if the token is valid for the given user.
      *
-     * @param token the JWT token
+     * @param token       the JWT token
      * @param userDetails the user details
      * @return true if the token is valid, false otherwise
      */

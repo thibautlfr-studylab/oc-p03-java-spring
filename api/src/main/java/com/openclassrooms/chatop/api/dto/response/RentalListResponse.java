@@ -13,4 +13,5 @@ import java.util.List;
 public record RentalListResponse(
         @Schema(description = "List of rental properties")
         List<RentalDTO> rentals
-) {}
+) {
+}

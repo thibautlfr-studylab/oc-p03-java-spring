@@ -25,12 +25,12 @@ import java.util.UUID;
 @Service
 public class FileStorageServiceImpl implements IFileStorageService {
 
-    private final Path fileStorageLocation;
     private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("jpg", "jpeg", "png", "gif", "webp");
     private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
             "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"
     );
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    private final Path fileStorageLocation;
 
     public FileStorageServiceImpl(@Value("${file.upload-dir:uploads}") String uploadDir) {
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
@@ -96,7 +96,7 @@ public class FileStorageServiceImpl implements IFileStorageService {
         if (mimeType == null || !ALLOWED_MIME_TYPES.contains(mimeType.toLowerCase())) {
             throw new InvalidFileException(
                     "Unauthorized file type. Only images are accepted. " +
-                    "Please verify that your file is an image and not a video or another file type."
+                            "Please verify that your file is an image and not a video or another file type."
             );
         }
     }

@@ -1,9 +1,9 @@
 package com.openclassrooms.chatop.api.service.interfaces;
 
-import com.openclassrooms.chatop.api.dto.response.AuthResponse;
+import com.openclassrooms.chatop.api.dto.UserDTO;
 import com.openclassrooms.chatop.api.dto.request.AuthRequest.LoginRequest;
 import com.openclassrooms.chatop.api.dto.request.AuthRequest.RegisterRequest;
-import com.openclassrooms.chatop.api.dto.UserDTO;
+import com.openclassrooms.chatop.api.dto.response.AuthResponse;
 
 /**
  * Service interface for authentication operations.
