@@ -191,8 +191,8 @@ public class RentalController {
         User owner = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", userDetails.getUsername()));
 
-        // Create rental (validation happens in service layer)
-        rentalService.createRental(request, picture, owner);
+        // Create rental (validation happens in the service layer)
+        RentalDTO createdRental = rentalService.createRental(request, picture, owner);
 
         return ResponseEntity.ok(new SuccessResponse("Rental created !"));
     }

@@ -47,7 +47,7 @@ public class RentalServiceImpl implements IRentalService {
     public RentalDTO createRental(CreateRentalRequest request, MultipartFile picture, User owner) {
         // Validate picture is provided (required for creation)
         if (picture == null || picture.isEmpty()) {
-            throw new BusinessValidationException("Une image est requise pour créer une annonce de location");
+            throw new BusinessValidationException("An image is required to create a rental listing");
         }
 
         // Store the picture and get its URL (validation happens in FileStorageService)
@@ -72,18 +72,20 @@ public class RentalServiceImpl implements IRentalService {
     public Optional<RentalDTO> updateRental(Long id, UpdateRentalRequest request, MultipartFile picture) {
         return rentalRepository.findById(id).map(rental -> {
             // Validate that at least one field is being updated
-            boolean hasUpdate = (request.name() != null && !request.name().isEmpty()) ||
+            boolean requestName = request.name() != null && !request.name().isEmpty();
+
+            boolean hasUpdate = requestName ||
                                 request.surface() != null ||
                                 request.price() != null ||
                                 request.description() != null ||
                                 (picture != null && !picture.isEmpty());
 
             if (!hasUpdate) {
-                throw new BusinessValidationException("Au moins un champ doit être fourni pour la mise à jour");
+                throw new BusinessValidationException("At least one field must be provided for the update");
             }
 
             // Update fields if provided
-            if (request.name() != null && !request.name().isEmpty()) {
+            if (requestName) {
                 rental.setName(request.name());
             }
             if (request.surface() != null) {
@@ -96,7 +98,7 @@ public class RentalServiceImpl implements IRentalService {
                 rental.setDescription(request.description());
             }
 
-            // Update picture if provided (validation happens in FileStorageService)
+            // Update the picture if provided (validation happens in FileStorageService)
             if (picture != null && !picture.isEmpty()) {
                 String pictureUrl = fileStorageService.storeFile(picture);
                 rental.setPicture(pictureUrl);

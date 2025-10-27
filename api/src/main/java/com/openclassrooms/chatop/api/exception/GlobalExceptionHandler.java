@@ -168,7 +168,7 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
                 .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
-                .message("Email ou mot de passe incorrect")
+                .message("Invalid email or password")
                 .path(request.getRequestURI())
                 .build();
 
@@ -190,7 +190,7 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.UNAUTHORIZED.value())
                 .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
-                .message("Email ou mot de passe incorrect")
+                .message("Invalid email or password")
                 .path(request.getRequestURI())
                 .build();
 
@@ -212,7 +212,7 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.PAYLOAD_TOO_LARGE.value())
                 .error(HttpStatus.PAYLOAD_TOO_LARGE.getReasonPhrase())
-                .message("La taille du fichier dépasse la limite autorisée de 10MB")
+                .message("File size exceeds the maximum allowed limit of 10MB")
                 .path(request.getRequestURI())
                 .build();
 
@@ -234,7 +234,7 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("Une erreur interne s'est produite. Veuillez réessayer ultérieurement.")
+                .message("An internal error occurred. Please try again later.")
                 .path(request.getRequestURI())
                 .build();
 

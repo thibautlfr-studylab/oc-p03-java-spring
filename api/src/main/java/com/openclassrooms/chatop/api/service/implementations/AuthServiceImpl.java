@@ -93,7 +93,7 @@ public class AuthServiceImpl implements IAuthService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new UsernameNotFoundException("Aucun utilisateur authentifié trouvé");
+            throw new UsernameNotFoundException("No authenticated user found");
         }
 
         String email = authentication.getName();

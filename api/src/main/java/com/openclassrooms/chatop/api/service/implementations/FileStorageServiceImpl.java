@@ -37,7 +37,7 @@ public class FileStorageServiceImpl implements IFileStorageService {
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (IOException ex) {
-            throw new InvalidFileException("Impossible de créer le répertoire de stockage des fichiers", ex);
+            throw new InvalidFileException("Failed to create file storage directory", ex);
         }
     }
 
@@ -62,32 +62,32 @@ public class FileStorageServiceImpl implements IFileStorageService {
                     .path(newFilename)
                     .toUriString();
         } catch (IOException ex) {
-            throw new InvalidFileException("Impossible de sauvegarder le fichier. Veuillez réessayer.", ex);
+            throw new InvalidFileException("Failed to store file. Please try again.", ex);
         }
     }
 
     private void validateFile(MultipartFile file) {
         // Check if file is empty
         if (file == null || file.isEmpty()) {
-            throw new InvalidFileException("Aucun fichier n'a été sélectionné. Veuillez choisir une image à uploader.");
+            throw new InvalidFileException("No file selected. Please choose an image to upload.");
         }
 
         // Check file size
         if (file.getSize() > MAX_FILE_SIZE) {
-            throw new InvalidFileException("La taille du fichier dépasse la limite autorisée de 10MB.");
+            throw new InvalidFileException("File size exceeds the maximum allowed limit of 10MB.");
         }
 
         // Check filename for security
         String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         if (filename.contains("..")) {
-            throw new InvalidFileException("Le nom du fichier contient des caractères invalides.");
+            throw new InvalidFileException("Filename contains invalid characters.");
         }
 
         // Check file extension
         String extension = getFileExtension(filename);
         if (!ALLOWED_EXTENSIONS.contains(extension.toLowerCase())) {
             throw new InvalidFileException(
-                    "Format de fichier non supporté. Seules les images sont acceptées (jpg, jpeg, png, gif, webp)."
+                    "Unsupported file format. Only images are accepted (jpg, jpeg, png, gif, webp)."
             );
         }
 
@@ -95,8 +95,8 @@ public class FileStorageServiceImpl implements IFileStorageService {
         String mimeType = file.getContentType();
         if (mimeType == null || !ALLOWED_MIME_TYPES.contains(mimeType.toLowerCase())) {
             throw new InvalidFileException(
-                    "Type de fichier non autorisé. Seules les images sont acceptées. " +
-                    "Vérifiez que votre fichier est bien une image et non une vidéo ou un autre type de fichier."
+                    "Unauthorized file type. Only images are accepted. " +
+                    "Please verify that your file is an image and not a video or another file type."
             );
         }
     }
