@@ -1,8 +1,8 @@
 package com.openclassrooms.chatop.api.controller;
 
-import com.openclassrooms.chatop.api.dto.common.MessageResponse;
-import com.openclassrooms.chatop.api.dto.message.CreateMessageRequest;
-import com.openclassrooms.chatop.api.service.MessageService;
+import com.openclassrooms.chatop.api.dto.response.SuccessResponse;
+import com.openclassrooms.chatop.api.dto.request.MessageRequest.CreateMessageRequest;
+import com.openclassrooms.chatop.api.service.interfaces.IMessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @SecurityRequirement(name = "bearerAuth")
 public class MessageController {
 
-    private final MessageService messageService;
+    private final IMessageService messageService;
 
     /**
      * Create a new message.
@@ -42,7 +42,7 @@ public class MessageController {
     @Operation(summary = "Send a message", description = "Send a message to a rental property owner")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Message sent successfully",
-                    content = @Content(schema = @Schema(implementation = MessageResponse.class))),
+                    content = @Content(schema = @Schema(implementation = SuccessResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request - missing required fields",
                     content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized - authentication required",
@@ -50,8 +50,8 @@ public class MessageController {
             @ApiResponse(responseCode = "404", description = "User or rental not found",
                     content = @Content)
     })
-    public ResponseEntity<MessageResponse> createMessage(@Valid @RequestBody CreateMessageRequest request) {
+    public ResponseEntity<SuccessResponse> createMessage(@Valid @RequestBody CreateMessageRequest request) {
         messageService.createMessage(request);
-        return ResponseEntity.ok(new MessageResponse("Message send with success"));
+        return ResponseEntity.ok(new SuccessResponse("Message send with success"));
     }
 }

@@ -1,11 +1,15 @@
-package com.openclassrooms.chatop.api.service;
+package com.openclassrooms.chatop.api.service.implementations;
 
-import com.openclassrooms.chatop.api.dto.auth.AuthResponse;
-import com.openclassrooms.chatop.api.dto.auth.LoginRequest;
-import com.openclassrooms.chatop.api.dto.auth.RegisterRequest;
-import com.openclassrooms.chatop.api.dto.user.UserDTO;
+import com.openclassrooms.chatop.api.dto.response.AuthResponse;
+import com.openclassrooms.chatop.api.dto.request.AuthRequest.LoginRequest;
+import com.openclassrooms.chatop.api.dto.request.AuthRequest.RegisterRequest;
+import com.openclassrooms.chatop.api.dto.UserDTO;
+import com.openclassrooms.chatop.api.exception.ResourceAlreadyExistsException;
+import com.openclassrooms.chatop.api.exception.ResourceNotFoundException;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.UserRepository;
+import com.openclassrooms.chatop.api.service.interfaces.IAuthService;
+import com.openclassrooms.chatop.api.service.interfaces.IJwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,37 +21,30 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
- * Service handling authentication business logic.
+ * Service implementation handling authentication business logic.
  * Manages user registration, login, and user information retrieval.
  */
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthServiceImpl implements IAuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final IJwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    /**
-     * Register a new user.
-     * Encrypts the password and creates a new user account.
-     *
-     * @param request the registration request containing user details
-     * @return AuthResponse with JWT token
-     * @throws RuntimeException if email already exists
-     */
+    @Override
     public AuthResponse register(RegisterRequest request) {
         // Check if email already exists
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+        if (userRepository.existsByEmail(request.email())) {
+            throw new ResourceAlreadyExistsException("User", "email", request.email());
         }
 
         // Create new user
         User user = new User();
-        user.setEmail(request.getEmail());
-        user.setName(request.getName());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setEmail(request.email());
+        user.setName(request.name());
+        user.setPassword(passwordEncoder.encode(request.password()));
 
         // Save user to database
         userRepository.save(user);
@@ -64,24 +61,18 @@ public class AuthService {
         return new AuthResponse(token);
     }
 
-    /**
-     * Authenticate a user and generate JWT token.
-     *
-     * @param request the login request containing credentials
-     * @return AuthResponse with JWT token
-     * @throws RuntimeException if authentication fails
-     */
+    @Override
     public AuthResponse login(LoginRequest request) {
         // Authenticate the user
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
+                        request.email(),
+                        request.password()
                 )
         );
 
         // Load user details
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // Generate JWT token
@@ -96,57 +87,22 @@ public class AuthService {
         return new AuthResponse(token);
     }
 
-    /**
-     * Get current authenticated user information.
-     *
-     * @return UserDTO with user information
-     * @throws RuntimeException if user is not authenticated
-     */
+    @Override
     public UserDTO getCurrentUser() {
         // Get the currently authenticated user from SecurityContext
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("No authenticated user found");
+            throw new UsernameNotFoundException("No authenticated user found");
         }
 
         String email = authentication.getName();
 
         // Find user in database
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
 
-        // Convert to DTO
-        return convertToDTO(user);
-    }
-
-    /**
-     * Get user by ID.
-     *
-     * @param id the user ID
-     * @return UserDTO with user information
-     * @throws RuntimeException if user not found
-     */
-    public UserDTO getUserById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-
-        return convertToDTO(user);
-    }
-
-    /**
-     * Convert User entity to UserDTO.
-     *
-     * @param user the User entity
-     * @return UserDTO
-     */
-    private UserDTO convertToDTO(User user) {
-        UserDTO dto = new UserDTO();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setCreated_at(user.getCreatedAt());
-        dto.setUpdated_at(user.getUpdatedAt());
-        return dto;
+        // Convert to DTO using fromEntity
+        return UserDTO.fromEntity(user);
     }
 }
