@@ -4,6 +4,7 @@ import com.openclassrooms.chatop.api.dto.RentalDTO;
 import com.openclassrooms.chatop.api.dto.request.RentalRequest.CreateRentalRequest;
 import com.openclassrooms.chatop.api.dto.request.RentalRequest.UpdateRentalRequest;
 import com.openclassrooms.chatop.api.exception.BusinessValidationException;
+import com.openclassrooms.chatop.api.mapper.RentalMapper;
 import com.openclassrooms.chatop.api.model.Rental;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.RentalRepository;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 /**
  * Service implementation for rental operations.
  * Handles business logic for rental-related functionality.
+ * Uses MapStruct's RentalMapper for entity-DTO conversions.
  */
 @Service
 @RequiredArgsConstructor
@@ -32,14 +34,14 @@ public class RentalServiceImpl implements IRentalService {
     @Override
     public List<RentalDTO> getAllRentals() {
         return rentalRepository.findAll().stream()
-                .map(RentalDTO::fromEntity)
+                .map(RentalMapper.INSTANCE::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Optional<RentalDTO> getRentalById(Long id) {
         return rentalRepository.findById(id)
-                .map(RentalDTO::fromEntity);
+                .map(RentalMapper.INSTANCE::toDto);
     }
 
     @Override
@@ -105,7 +107,7 @@ public class RentalServiceImpl implements IRentalService {
 
             // Save and return
             Rental updatedRental = rentalRepository.save(rental);
-            return RentalDTO.fromEntity(updatedRental);
+            return RentalMapper.INSTANCE.toDto(updatedRental);
         });
     }
 }

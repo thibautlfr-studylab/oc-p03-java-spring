@@ -6,6 +6,7 @@ import com.openclassrooms.chatop.api.dto.request.AuthRequest.RegisterRequest;
 import com.openclassrooms.chatop.api.dto.response.AuthResponse;
 import com.openclassrooms.chatop.api.exception.ResourceAlreadyExistsException;
 import com.openclassrooms.chatop.api.exception.ResourceNotFoundException;
+import com.openclassrooms.chatop.api.mapper.UserMapper;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.UserRepository;
 import com.openclassrooms.chatop.api.service.interfaces.IAuthService;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 /**
  * Service implementation handling authentication business logic.
  * Manages user registration, login, and user information retrieval.
+ * Uses MapStruct's UserMapper for entity-DTO conversions.
  */
 @Service
 @RequiredArgsConstructor
@@ -102,7 +104,7 @@ public class AuthServiceImpl implements IAuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
 
-        // Convert to DTO using fromEntity
-        return UserDTO.fromEntity(user);
+        // Convert to DTO using UserMapper
+        return UserMapper.INSTANCE.toDto(user);
     }
 }
