@@ -257,7 +257,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/api/messages/",
+							"raw": "{{baseURL}}/api/messages",
 							"host": [
 								"{{baseURL}}"
 							],

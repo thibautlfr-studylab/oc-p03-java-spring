@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -48,26 +47,17 @@ public class AuthController {
             @ApiResponse(
                     responseCode = "200",
                     description = "User registered successfully",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = AuthResponse.class)
-                    )
+                    content = @Content(schema = @Schema(implementation = AuthResponse.class))
             ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Invalid input or validation failed",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "409",
                     description = "Email already exists",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -92,18 +82,12 @@ public class AuthController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Login successful",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = AuthResponse.class)
-                    )
+                    content = @Content(schema = @Schema(implementation = AuthResponse.class))
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Invalid credentials",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -120,25 +104,18 @@ public class AuthController {
     @GetMapping("/me")
     @Operation(
             summary = "Get current user",
-            description = "Returns the authenticated user's information. Requires a valid JWT token in the Authorization header.",
-            security = @SecurityRequirement(name = "bearerAuth")
+            description = "Returns the authenticated user's information. Requires a valid JWT token in the Authorization header."
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
                     description = "User information retrieved successfully",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = UserDTO.class)
-                    )
+                    content = @Content(schema = @Schema(implementation = UserDTO.class))
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Not authenticated or invalid token",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponse.class)
-                    )
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     public ResponseEntity<UserDTO> getCurrentUser() {
