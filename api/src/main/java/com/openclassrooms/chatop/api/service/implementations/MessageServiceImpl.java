@@ -1,7 +1,9 @@
 package com.openclassrooms.chatop.api.service.implementations;
 
+import com.openclassrooms.chatop.api.dto.MessageDTO;
 import com.openclassrooms.chatop.api.dto.request.MessageRequest.CreateMessageRequest;
 import com.openclassrooms.chatop.api.exception.ResourceNotFoundException;
+import com.openclassrooms.chatop.api.mapper.MessageMapper;
 import com.openclassrooms.chatop.api.model.Message;
 import com.openclassrooms.chatop.api.model.Rental;
 import com.openclassrooms.chatop.api.model.User;
@@ -27,7 +29,7 @@ public class MessageServiceImpl implements IMessageService {
 
     @Override
     @Transactional
-    public void createMessage(CreateMessageRequest request) {
+    public MessageDTO createMessage(CreateMessageRequest request) {
         // Validate user exists
         User user = userRepository.findById(request.user_id())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.user_id()));
@@ -37,12 +39,11 @@ public class MessageServiceImpl implements IMessageService {
                 .orElseThrow(() -> new ResourceNotFoundException("Rental", "id", request.rental_id()));
 
         // Create message entity
-        Message message = new Message();
-        message.setMessage(request.message());
+        Message message = MessageMapper.INSTANCE.toEntity(request);
         message.setUser(user);
         message.setRental(rental);
 
         // Save message
-        messageRepository.save(message);
+        return MessageMapper.INSTANCE.toDto(messageRepository.save(message));
     }
 }

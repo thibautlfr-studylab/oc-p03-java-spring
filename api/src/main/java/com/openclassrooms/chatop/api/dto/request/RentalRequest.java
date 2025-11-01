@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
@@ -26,13 +27,17 @@ public class RentalRequest {
 
             @NotNull(message = "Surface is required")
             @Positive(message = "Surface must be positive")
-            @Schema(description = "Property surface area in square meters", example = "65.5")
+            @Schema(description = "Property surface area in square meters", example = "65.50")
             BigDecimal surface,
 
             @NotNull(message = "Price is required")
             @Positive(message = "Price must be positive")
             @Schema(description = "Rental price per night", example = "150.00")
             BigDecimal price,
+
+            @NotNull(message = "Picture is required")
+            @Schema(description = "Property picture file")
+            MultipartFile picture,
 
             @Size(max = 2000, message = "Description must not exceed 2000 characters")
             @Schema(description = "Property description", example = "Beautiful apartment with ocean view, 2 bedrooms, fully equipped kitchen")
@@ -51,12 +56,15 @@ public class RentalRequest {
             String name,
 
             @Positive(message = "Surface must be positive")
-            @Schema(description = "Property surface area in square meters", example = "70.0")
+            @Schema(description = "Property surface area in square meters", example = "70.00")
             BigDecimal surface,
 
             @Positive(message = "Price must be positive")
             @Schema(description = "Rental price per night", example = "175.00")
             BigDecimal price,
+
+            @Schema(description = "New rental picture file")
+            MultipartFile picture,
 
             @Size(max = 2000, message = "Description must not exceed 2000 characters")
             @Schema(description = "Property description", example = "Recently renovated apartment with new amenities")

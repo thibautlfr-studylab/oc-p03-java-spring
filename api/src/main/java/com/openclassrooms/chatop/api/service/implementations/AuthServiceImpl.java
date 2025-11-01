@@ -6,6 +6,7 @@ import com.openclassrooms.chatop.api.dto.request.AuthRequest.RegisterRequest;
 import com.openclassrooms.chatop.api.dto.response.AuthResponse;
 import com.openclassrooms.chatop.api.exception.ResourceAlreadyExistsException;
 import com.openclassrooms.chatop.api.exception.ResourceNotFoundException;
+import com.openclassrooms.chatop.api.mapper.UserMapper;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.UserRepository;
 import com.openclassrooms.chatop.api.service.interfaces.IAuthService;
@@ -19,10 +20,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service implementation handling authentication business logic.
  * Manages user registration, login, and user information retrieval.
+ * Uses MapStruct's UserMapper for entity-DTO conversions.
  */
 @Service
 @RequiredArgsConstructor
@@ -34,19 +37,19 @@ public class AuthServiceImpl implements IAuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
+    @Transactional
     public AuthResponse register(RegisterRequest request) {
         // Check if email already exists
         if (userRepository.existsByEmail(request.email())) {
             throw new ResourceAlreadyExistsException("User", "email", request.email());
         }
 
-        // Create new user
-        User user = new User();
-        user.setEmail(request.email());
-        user.setName(request.name());
+        // Create a new user
+        User user = UserMapper.INSTANCE.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.password()));
 
-        // Save user to database
+
+        // Save user to the database
         userRepository.save(user);
 
         // Generate JWT token
@@ -62,6 +65,7 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
+    @Transactional
     public AuthResponse login(LoginRequest request) {
         // Authenticate the user
         authenticationManager.authenticate(
@@ -88,6 +92,7 @@ public class AuthServiceImpl implements IAuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDTO getCurrentUser() {
         // Get the currently authenticated user from SecurityContext
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -98,11 +103,11 @@ public class AuthServiceImpl implements IAuthService {
 
         String email = authentication.getName();
 
-        // Find user in database
+        // Find user in the database
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
 
-        // Convert to DTO using fromEntity
-        return UserDTO.fromEntity(user);
+        // Convert to DTO using UserMapper
+        return UserMapper.INSTANCE.toDto(user);
     }
 }
