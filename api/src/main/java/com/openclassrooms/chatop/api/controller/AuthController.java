@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class AuthController {
      * @return AuthResponse with JWT token
      */
     @PostMapping("/register")
+    @SecurityRequirements()
     @Operation(
             summary = "Register a new user",
             description = "Creates a new user account with encrypted password and returns a JWT token. No authentication required."
@@ -81,6 +83,7 @@ public class AuthController {
      * @return AuthResponse with JWT token
      */
     @PostMapping("/login")
+    @SecurityRequirements()
     @Operation(
             summary = "User login",
             description = "Authenticates a user with email and password, returns a JWT token if successful. No authentication required."
