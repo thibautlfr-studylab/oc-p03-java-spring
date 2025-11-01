@@ -105,8 +105,9 @@ class RentalServiceTest {
             rental2.setName("Mountain chalet");
             rental2.setSurface(BigDecimal.valueOf(80.00));
             rental2.setPrice(BigDecimal.valueOf(200.00));
+            rental2.setOwner(testUser);
 
-            when(rentalRepository.findAll()).thenReturn(Arrays.asList(testRental, rental2));
+            when(rentalRepository.findAllWithOwner()).thenReturn(Arrays.asList(testRental, rental2));
 
             // When
             List<RentalDTO> result = rentalService.getAllRentals();
@@ -115,21 +116,21 @@ class RentalServiceTest {
             assertThat(result).hasSize(2);
             assertThat(result.get(0).name()).isEqualTo("Charming seaside apartment");
             assertThat(result.get(1).name()).isEqualTo("Mountain chalet");
-            verify(rentalRepository, times(1)).findAll();
+            verify(rentalRepository, times(1)).findAllWithOwner();
         }
 
         @Test
         @DisplayName("Should return empty list when no rentals exist")
         void shouldReturnEmptyListWhenNoRentals() {
             // Given
-            when(rentalRepository.findAll()).thenReturn(List.of());
+            when(rentalRepository.findAllWithOwner()).thenReturn(List.of());
 
             // When
             List<RentalDTO> result = rentalService.getAllRentals();
 
             // Then
             assertThat(result).isEmpty();
-            verify(rentalRepository, times(1)).findAll();
+            verify(rentalRepository, times(1)).findAllWithOwner();
         }
     }
 
@@ -141,7 +142,7 @@ class RentalServiceTest {
         @DisplayName("Should return rental when found")
         void shouldReturnRentalWhenFound() {
             // Given
-            when(rentalRepository.findById(1L)).thenReturn(Optional.of(testRental));
+            when(rentalRepository.findByIdWithOwner(1L)).thenReturn(Optional.of(testRental));
 
             // When
             Optional<RentalDTO> result = rentalService.getRentalById(1L);
@@ -150,21 +151,21 @@ class RentalServiceTest {
             assertThat(result).isPresent();
             assertThat(result.get().id()).isEqualTo(1L);
             assertThat(result.get().name()).isEqualTo("Charming seaside apartment");
-            verify(rentalRepository, times(1)).findById(1L);
+            verify(rentalRepository, times(1)).findByIdWithOwner(1L);
         }
 
         @Test
         @DisplayName("Should return empty Optional when rental not found")
         void shouldReturnEmptyWhenNotFound() {
             // Given
-            when(rentalRepository.findById(999L)).thenReturn(Optional.empty());
+            when(rentalRepository.findByIdWithOwner(999L)).thenReturn(Optional.empty());
 
             // When
             Optional<RentalDTO> result = rentalService.getRentalById(999L);
 
             // Then
             assertThat(result).isEmpty();
-            verify(rentalRepository, times(1)).findById(999L);
+            verify(rentalRepository, times(1)).findByIdWithOwner(999L);
         }
     }
 

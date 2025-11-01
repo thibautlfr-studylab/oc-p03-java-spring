@@ -34,13 +34,13 @@ public class RentalServiceImpl implements IRentalService {
     @Override
     @Transactional(readOnly = true)
     public List<RentalDTO> getAllRentals() {
-        return RentalMapper.INSTANCE.toDtoList(rentalRepository.findAll());
+        return RentalMapper.INSTANCE.toDtoList(rentalRepository.findAllWithOwner());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<RentalDTO> getRentalById(Long id) {
-        return rentalRepository.findById(id).map(RentalMapper.INSTANCE::toDto);
+        return rentalRepository.findByIdWithOwner(id).map(RentalMapper.INSTANCE::toDto);
     }
 
     @Override
