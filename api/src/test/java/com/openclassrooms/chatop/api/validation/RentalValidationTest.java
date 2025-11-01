@@ -6,10 +6,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.math.BigDecimal;
@@ -23,14 +20,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class RentalValidationTest {
 
-    private Validator validator;
+    private static ValidatorFactory validatorFactory;
+    private static Validator validator;
     private MockMultipartFile validImageFile;
+
+    @BeforeAll
+    static void setUpValidatorFactory() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
+    }
+
+    @AfterAll
+    static void tearDownValidatorFactory() {
+        if (validatorFactory != null) {
+            validatorFactory.close();
+        }
+    }
 
     @BeforeEach
     void setUp() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-
         validImageFile = new MockMultipartFile(
                 "picture",
                 "test.jpg",
