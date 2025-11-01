@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,17 +38,13 @@ public class UserController {
     @GetMapping("/user/{id}")
     @Operation(
             summary = "Get user by ID",
-            description = "Returns user information for the specified ID. Requires authentication.",
-            security = @SecurityRequirement(name = "bearerAuth")
+            description = "Returns user information for the specified ID. Requires authentication."
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
                     description = "User found successfully",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = UserDTO.class)
-                    )
+                    content = @Content(schema = @Schema(implementation = UserDTO.class))
             ),
             @ApiResponse(
                     responseCode = "401",
