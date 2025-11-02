@@ -21,6 +21,7 @@
 - [API Documentation](#api-documentation)
 - [API Endpoints](#api-endpoints)
 - [Authentication](#authentication)
+- [Error Handling](#error-handling)
 - [Project Structure](#project-structure)
 - [Development](#development)
 - [Testing](#testing)
@@ -37,6 +38,7 @@
 - Image upload and storage
 - MySQL database integration
 - Complete OpenAPI/Swagger documentation
+- Standardized error handling using RFC 9457 (Problem Details for HTTP APIs)
 
 The API is designed to work seamlessly with an Angular 14 frontend (available in the parent directory).
 
@@ -429,6 +431,51 @@ curl -X POST http://localhost:3001/api/rentals \
 - **JWT Expiration**: Tokens expire after 24 hours (configurable)
 - **Protected Routes**: All endpoints except `/api/auth/register` and `/api/auth/login` require authentication
 
+---
+
+## Error Handling
+
+### RFC 9457 - Problem Details for HTTP APIs
+
+This API implements **RFC 9457** (Problem Details for HTTP APIs) for standardized error responses. All errors return a consistent JSON structure following the standard:
+
+```json
+{
+  "type": "https://api.chatop.com/errors/resource-not-found",
+  "title": "Resource Not Found",
+  "status": 404,
+  "detail": "Rental with id 999 not found",
+  "instance": "/api/rentals/999"
+}
+```
+
+### Error Response Structure
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | URI | A URI reference identifying the problem type |
+| `title` | string | A short, human-readable summary of the problem |
+| `status` | integer | HTTP status code |
+| `detail` | string | Human-readable explanation specific to this occurrence |
+| `instance` | URI | URI reference identifying the specific occurrence |
+
+### Common Error Types
+
+- **400 Bad Request**: Invalid input data or validation errors
+- **401 Unauthorized**: Missing or invalid JWT token
+- **403 Forbidden**: Valid token but insufficient permissions
+- **404 Not Found**: Requested resource doesn't exist
+- **409 Conflict**: Resource already exists (e.g., duplicate email)
+- **500 Internal Server Error**: Unexpected server error
+
+### Implementation
+
+Error handling is centralized in `GlobalExceptionHandler.java` using Spring's `@ControllerAdvice` and the `ProblemDetail` class introduced in Spring Framework 6.
+
+**Reference**: [RFC 9457 Specification](https://www.rfc-editor.org/rfc/rfc9457.html)
+
+---
+
 ## Project Structure
 
 ```
@@ -531,6 +578,7 @@ This project follows **SOLID principles** and Spring Boot best practices:
 - Validate input data with Spring Validation annotations
 - Document all endpoints with Swagger annotations
 - Use Lombok to reduce boilerplate code
+- Follow RFC 9457 for standardized error responses
 
 ### Development Tools
 
