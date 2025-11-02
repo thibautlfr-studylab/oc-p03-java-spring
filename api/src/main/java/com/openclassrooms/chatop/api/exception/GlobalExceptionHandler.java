@@ -1,9 +1,8 @@
 package com.openclassrooms.chatop.api.exception;
 
-import com.openclassrooms.chatop.api.dto.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,231 +12,200 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Global exception handler for the application.
- * Catches all exceptions and returns standardized error responses.
+ * Global exception handler for the application using RFC 9457 ProblemDetail.
+ * Catches all exceptions and returns standardized error responses compliant with RFC 9457.
  * Follows Spring Boot best practices and SOLID principles.
+ *
+ * <p>This handler uses {@link ProblemType} enum to ensure type-safety and consistency
+ * across all error responses.</p>
+ *
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9457.html">RFC 9457</a>
+ * @see ProblemType
  */
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
     /**
+     * Builds a ResponseEntity with the given ProblemDetail.
+     * Helper method to avoid repetition of ResponseEntity.status(...).body(...) pattern.
+     *
+     * @param problemDetail the ProblemDetail to include in the response
+     * @return ResponseEntity with appropriate status and body
+     */
+    private ResponseEntity<ProblemDetail> buildResponse(ProblemDetail problemDetail) {
+        return ResponseEntity.status(problemDetail.getStatus()).body(problemDetail);
+    }
+
+    /**
      * Handle ResourceNotFoundException - when a resource is not found.
-     * Returns HTTP 404 Not Found.
+     * Returns HTTP 404 Not Found with RFC 9457 ProblemDetail.
      */
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(
+    public ResponseEntity<ProblemDetail> handleResourceNotFoundException(
             ResourceNotFoundException ex,
             HttpServletRequest request
     ) {
         log.warn("Resource not found: {}", ex.getMessage());
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.NOT_FOUND.value())
-                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
-                .message(ex.getMessage())
-                .path(request.getRequestURI())
-                .build();
+        ProblemDetail problemDetail = ProblemType.RESOURCE_NOT_FOUND
+                .createProblemDetail(ex.getMessage(), request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return buildResponse(problemDetail);
     }
 
     /**
      * Handle ResourceAlreadyExistsException - when a resource already exists.
-     * Returns HTTP 409 Conflict.
+     * Returns HTTP 409 Conflict with RFC 9457 ProblemDetail.
      */
     @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleResourceAlreadyExistsException(
+    public ResponseEntity<ProblemDetail> handleResourceAlreadyExistsException(
             ResourceAlreadyExistsException ex,
             HttpServletRequest request
     ) {
         log.warn("Resource already exists: {}", ex.getMessage());
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.CONFLICT.value())
-                .error(HttpStatus.CONFLICT.getReasonPhrase())
-                .message(ex.getMessage())
-                .path(request.getRequestURI())
-                .build();
+        ProblemDetail problemDetail = ProblemType.RESOURCE_ALREADY_EXISTS
+                .createProblemDetail(ex.getMessage(), request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+        return buildResponse(problemDetail);
     }
 
     /**
      * Handle InvalidFileException - when file upload validation fails.
-     * Returns HTTP 400 Bad Request.
+     * Returns HTTP 400 Bad Request with RFC 9457 ProblemDetail.
      */
     @ExceptionHandler(InvalidFileException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidFileException(
+    public ResponseEntity<ProblemDetail> handleInvalidFileException(
             InvalidFileException ex,
             HttpServletRequest request
     ) {
         log.warn("Invalid file upload: {}", ex.getMessage());
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message(ex.getMessage())
-                .path(request.getRequestURI())
-                .build();
+        ProblemDetail problemDetail = ProblemType.INVALID_FILE
+                .createProblemDetail(ex.getMessage(), request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return buildResponse(problemDetail);
     }
 
     /**
      * Handle BusinessValidationException - when business rules are violated.
-     * Returns HTTP 400 Bad Request.
+     * Returns HTTP 400 Bad Request with RFC 9457 ProblemDetail.
      */
     @ExceptionHandler(BusinessValidationException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessValidationException(
+    public ResponseEntity<ProblemDetail> handleBusinessValidationException(
             BusinessValidationException ex,
             HttpServletRequest request
     ) {
         log.warn("Business validation failed: {}", ex.getMessage());
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message(ex.getMessage())
-                .path(request.getRequestURI())
-                .build();
+        ProblemDetail problemDetail = ProblemType.BUSINESS_VALIDATION_ERROR
+                .createProblemDetail(ex.getMessage(), request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return buildResponse(problemDetail);
     }
 
     /**
      * Handle MethodArgumentNotValidException - when @Valid validation fails.
-     * Returns HTTP 400 Bad Request with detailed validation errors.
+     * Returns HTTP 400 Bad Request with RFC 9457 ProblemDetail and invalid-params extension.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
+    public ResponseEntity<ProblemDetail> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException ex,
             HttpServletRequest request
     ) {
         log.warn("Validation failed: {}", ex.getMessage());
 
-        List<ErrorResponse.ValidationError> validationErrors = ex.getBindingResult()
+        // Create invalid-params list according to RFC 9457
+        List<Map<String, String>> invalidParams = ex.getBindingResult()
                 .getAllErrors()
                 .stream()
                 .map(error -> {
                     String fieldName = ((FieldError) error).getField();
-                    Object rejectedValue = ((FieldError) error).getRejectedValue();
                     String message = error.getDefaultMessage();
 
-                    return ErrorResponse.ValidationError.builder()
-                            .field(fieldName)
-                            .rejectedValue(rejectedValue)
-                            .message(message)
-                            .build();
+                    return Map.of(
+                            "name", fieldName,
+                            "reason", message != null ? message : "Validation failed"
+                    );
                 })
                 .collect(Collectors.toList());
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.BAD_REQUEST.value())
-                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message("Validation failed for one or more fields")
-                .path(request.getRequestURI())
-                .validationErrors(validationErrors)
-                .build();
+        ProblemDetail problemDetail = ProblemType.VALIDATION_ERROR
+                .createProblemDetail("Invalid request parameters", request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        // Add RFC 9457 extension for validation errors
+        problemDetail.setProperty("invalid-params", invalidParams);
+
+        return buildResponse(problemDetail);
     }
 
     /**
-     * Handle BadCredentialsException - when authentication fails.
-     * Returns HTTP 401 Unauthorized.
+     * Handle authentication exceptions - when credentials are invalid or user is not found.
+     * Returns HTTP 401 Unauthorized with RFC 9457 ProblemDetail.
+     *
+     * <p>This handler combines {@link BadCredentialsException} and {@link UsernameNotFoundException}
+     * since both represent authentication failures and should return the same error response
+     * to avoid leaking information about which users exist in the system.</p>
      */
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorResponse> handleBadCredentialsException(
-            BadCredentialsException ex,
+    @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class})
+    public ResponseEntity<ProblemDetail> handleAuthenticationExceptions(
+            Exception ex,
             HttpServletRequest request
     ) {
-        log.warn("Authentication failed: Invalid credentials");
+        log.warn("Authentication failed: {}", ex.getClass().getSimpleName());
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.UNAUTHORIZED.value())
-                .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
-                .message("Invalid email or password")
-                .path(request.getRequestURI())
-                .build();
+        ProblemDetail problemDetail = ProblemType.INVALID_CREDENTIALS
+                .createProblemDetail("Invalid email or password", request.getRequestURI());
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-    }
-
-    /**
-     * Handle UsernameNotFoundException - when user is not found during authentication.
-     * Returns HTTP 401 Unauthorized.
-     */
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUsernameNotFoundException(
-            UsernameNotFoundException ex,
-            HttpServletRequest request
-    ) {
-        log.warn("User not found: {}", ex.getMessage());
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.UNAUTHORIZED.value())
-                .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
-                .message("Invalid email or password")
-                .path(request.getRequestURI())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        return buildResponse(problemDetail);
     }
 
     /**
      * Handle MaxUploadSizeExceededException - when uploaded file exceeds size limit.
-     * Returns HTTP 413 Payload Too Large.
+     * Returns HTTP 413 Payload Too Large with RFC 9457 ProblemDetail.
      */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(
+    public ResponseEntity<ProblemDetail> handleMaxUploadSizeExceededException(
             MaxUploadSizeExceededException ex,
             HttpServletRequest request
     ) {
-        log.warn("File size exceeds maximum allowed size");
+        log.warn("File size exceeds maximum allowed size", ex);
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.PAYLOAD_TOO_LARGE.value())
-                .error(HttpStatus.PAYLOAD_TOO_LARGE.getReasonPhrase())
-                .message("File size exceeds the maximum allowed limit of 10MB")
-                .path(request.getRequestURI())
-                .build();
+        ProblemDetail problemDetail = ProblemType.FILE_TOO_LARGE
+                .createProblemDetail(
+                        "File size exceeds the maximum allowed limit of 10MB",
+                        request.getRequestURI()
+                );
 
-        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(errorResponse);
+        return buildResponse(problemDetail);
     }
 
     /**
      * Handle all other unexpected exceptions.
-     * Returns HTTP 500 Internal Server Error.
+     * Returns HTTP 500 Internal Server Error with RFC 9457 ProblemDetail.
+     *
+     * <p>This is a catch-all handler that should only be triggered for truly unexpected errors.
+     * All expected error conditions should have their own specific exception handlers.</p>
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(
+    public ResponseEntity<ProblemDetail> handleGlobalException(
             Exception ex,
             HttpServletRequest request
     ) {
         log.error("Unexpected error occurred", ex);
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("An internal error occurred. Please try again later.")
-                .path(request.getRequestURI())
-                .build();
+        ProblemDetail problemDetail = ProblemType.INTERNAL_SERVER_ERROR
+                .createProblemDetail(
+                        "An internal error occurred. Please try again later.",
+                        request.getRequestURI()
+                );
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        return buildResponse(problemDetail);
     }
 }

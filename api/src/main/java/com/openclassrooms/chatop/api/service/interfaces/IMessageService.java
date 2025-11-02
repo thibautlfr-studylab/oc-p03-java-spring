@@ -1,5 +1,6 @@
 package com.openclassrooms.chatop.api.service.interfaces;
 
+import com.openclassrooms.chatop.api.dto.MessageDTO;
 import com.openclassrooms.chatop.api.dto.request.MessageRequest.CreateMessageRequest;
 
 /**
@@ -14,5 +15,5 @@ public interface IMessageService {
      * @param request the message data containing user_id, rental_id, and message text
      * @throws IllegalArgumentException if user or rental doesn't exist
      */
-    void createMessage(CreateMessageRequest request);
+    MessageDTO createMessage(CreateMessageRequest request);
 }

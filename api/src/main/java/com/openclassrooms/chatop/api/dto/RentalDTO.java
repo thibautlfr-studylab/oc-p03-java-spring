@@ -1,7 +1,6 @@
 package com.openclassrooms.chatop.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.openclassrooms.chatop.api.model.Rental;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
@@ -10,6 +9,7 @@ import java.time.LocalDateTime;
 /**
  * DTO for rental information responses.
  * Used to expose rental data in API responses.
+ * Mapping between Rental entity and RentalDTO is handled by MapStruct via RentalMapper.
  */
 @Schema(description = "Rental property information")
 public record RentalDTO(
@@ -42,26 +42,4 @@ public record RentalDTO(
         @Schema(description = "Last property update date", example = "2024/01/15")
         LocalDateTime updated_at
 ) {
-    /**
-     * Convert a Rental entity to a RentalDTO.
-     *
-     * @param rental the Rental entity to convert
-     * @return a RentalDTO containing the rental's information
-     */
-    public static RentalDTO fromEntity(Rental rental) {
-        if (rental == null) {
-            return null;
-        }
-        return new RentalDTO(
-                rental.getId(),
-                rental.getName(),
-                rental.getSurface(),
-                rental.getPrice(),
-                rental.getPicture(),
-                rental.getDescription(),
-                rental.getOwner().getId(),
-                rental.getCreatedAt(),
-                rental.getUpdatedAt()
-        );
-    }
 }

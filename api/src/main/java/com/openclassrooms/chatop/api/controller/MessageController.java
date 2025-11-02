@@ -1,5 +1,6 @@
 package com.openclassrooms.chatop.api.controller;
 
+import com.openclassrooms.chatop.api.dto.MessageDTO;
 import com.openclassrooms.chatop.api.dto.request.MessageRequest.CreateMessageRequest;
 import com.openclassrooms.chatop.api.dto.response.SuccessResponse;
 import com.openclassrooms.chatop.api.service.interfaces.IMessageService;
@@ -8,10 +9,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/messages")
 @RequiredArgsConstructor
 @Tag(name = "Messages", description = "Message management API")
-@SecurityRequirement(name = "bearerAuth")
 public class MessageController {
 
     private final IMessageService messageService;
@@ -44,14 +45,15 @@ public class MessageController {
             @ApiResponse(responseCode = "200", description = "Message sent successfully",
                     content = @Content(schema = @Schema(implementation = SuccessResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid request - missing required fields",
-                    content = @Content),
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized - authentication required",
-                    content = @Content),
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "404", description = "User or rental not found",
-                    content = @Content)
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     public ResponseEntity<SuccessResponse> createMessage(@Valid @RequestBody CreateMessageRequest request) {
-        messageService.createMessage(request);
-        return ResponseEntity.ok(new SuccessResponse("Message send with success"));
+        MessageDTO messageDTO = messageService.createMessage(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new SuccessResponse("Message sent successfully", messageDTO));
     }
 }
