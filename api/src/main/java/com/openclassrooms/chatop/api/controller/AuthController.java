@@ -4,7 +4,6 @@ import com.openclassrooms.chatop.api.dto.UserDTO;
 import com.openclassrooms.chatop.api.dto.request.AuthRequest.LoginRequest;
 import com.openclassrooms.chatop.api.dto.request.AuthRequest.RegisterRequest;
 import com.openclassrooms.chatop.api.dto.response.AuthResponse;
-import com.openclassrooms.chatop.api.dto.response.ErrorResponse;
 import com.openclassrooms.chatop.api.service.interfaces.IAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +14,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,12 +52,12 @@ public class AuthController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Invalid input or validation failed",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))
             ),
             @ApiResponse(
                     responseCode = "409",
                     description = "Email already exists",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))
             )
     })
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -87,7 +87,7 @@ public class AuthController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Invalid credentials",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))
             )
     })
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -115,7 +115,7 @@ public class AuthController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Not authenticated or invalid token",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))
             )
     })
     public ResponseEntity<UserDTO> getCurrentUser() {

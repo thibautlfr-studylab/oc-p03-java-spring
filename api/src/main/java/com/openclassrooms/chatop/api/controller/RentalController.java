@@ -3,7 +3,6 @@ package com.openclassrooms.chatop.api.controller;
 import com.openclassrooms.chatop.api.dto.RentalDTO;
 import com.openclassrooms.chatop.api.dto.request.RentalRequest.CreateRentalRequest;
 import com.openclassrooms.chatop.api.dto.request.RentalRequest.UpdateRentalRequest;
-import com.openclassrooms.chatop.api.dto.response.ErrorResponse;
 import com.openclassrooms.chatop.api.dto.response.RentalListResponse;
 import com.openclassrooms.chatop.api.dto.response.SuccessResponse;
 import com.openclassrooms.chatop.api.exception.ResourceNotFoundException;
@@ -19,6 +18,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -58,7 +58,7 @@ public class RentalController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized - Invalid or missing JWT token",
-                    content = @Content
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))
             )
     })
     public ResponseEntity<RentalListResponse> getAllRentals() {
@@ -87,12 +87,12 @@ public class RentalController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized - Invalid or missing JWT token",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Rental not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))
             )
     })
     public ResponseEntity<RentalDTO> getRentalById(
@@ -125,12 +125,12 @@ public class RentalController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Bad request - Invalid input data, missing fields, or invalid file",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized - Invalid or missing JWT token",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))
             )
     })
     public ResponseEntity<SuccessResponse> createRental(
@@ -164,17 +164,17 @@ public class RentalController {
             @ApiResponse(
                     responseCode = "400",
                     description = "Bad request - Invalid input data or invalid file",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized - Invalid or missing JWT token",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Rental not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(schema = @Schema(implementation = ProblemDetail.class))
             )
     })
     public ResponseEntity<SuccessResponse> updateRental(
