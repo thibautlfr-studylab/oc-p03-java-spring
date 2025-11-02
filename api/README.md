@@ -9,6 +9,7 @@
 ## Table of Contents
 
 - [About the Project](#about-the-project)
+- [Quick Start](#quick-start)
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
@@ -38,6 +39,52 @@
 - Complete OpenAPI/Swagger documentation
 
 The API is designed to work seamlessly with an Angular 14 frontend (available in the parent directory).
+
+---
+
+## Quick Start
+
+Get the backend up and running quickly:
+
+### 1. Database Setup
+
+```bash
+# Create database
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS chatop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# Run SQL schema
+mysql -u root -p chatop < ../ressources/sql/script.sql
+```
+
+### 2. Environment Configuration
+
+```bash
+# Navigate to backend directory
+cd api
+
+# Copy environment template
+cp .env.example .env
+
+# Edit .env with your MySQL credentials and JWT secret
+# DB_USERNAME=root
+# DB_PASSWORD=your_mysql_password
+# JWT_SECRET=your-super-secret-jwt-key
+```
+
+### 3. Run the Application
+
+```bash
+# Build and run
+./mvnw spring-boot:run
+```
+
+Backend will start on **http://localhost:3001**
+
+**Swagger UI**: [http://localhost:3001/api/swagger-ui/index.html](http://localhost:3001/api/swagger-ui/index.html)
+
+For detailed installation instructions, see [Installation](#installation) section below.
+
+---
 
 ## Technology Stack
 
@@ -493,13 +540,26 @@ Useful plugins:
 - Database Navigator
 
 
-### Testing with Postman
+### Testing the API
+
+You can test the API using Postman or Bruno:
+
+#### Option 1: Postman
 
 A complete Postman collection is available:
 
 1. Import the collection: `../ressources/postman/rental.postman_collection.json`
 2. Test all endpoints systematically
 3. Collection includes example requests and environment variables
+4. Documentation: [Postman Learning Center](https://learning.postman.com/docs/getting-started/importing-and-exporting-data/)
+
+#### Option 2: Bruno (Alternative)
+
+Bruno is an open-source alternative to Postman:
+
+1. Download: [https://www.usebruno.com/](https://www.usebruno.com/)
+2. Import the Postman collection (Bruno supports Postman format)
+3. Bruno is lightweight, fast, and Git-friendly (stores collections as plain text files)
 
 ---
 
@@ -588,5 +648,12 @@ logging.file.name=logs/chatop-api.log
 - [Spring Security Reference](https://docs.spring.io/spring-security/reference/)
 - [Spring Data JPA Guide](https://spring.io/guides/gs/accessing-data-jpa/)
 - [Swagger/OpenAPI](https://springdoc.org/)
+
+### API Testing Tools
+- [Postman](https://www.postman.com/) - API testing platform (collection available in `../ressources/postman/`)
+- [Bruno](https://www.usebruno.com/) - Open-source alternative to Postman (supports Postman format)
+
+### Frontend
+- [Frontend Documentation](../README.md) - Angular 14 frontend application
 
 **Note**: This API is designed to work with the Angular frontend located in the parent directory. Make sure to run both frontend and backend simultaneously for the complete application experience.
