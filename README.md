@@ -1,102 +1,70 @@
-# ChâTop - Rental Property Portal (Estate)
+# ChâTop - Frontend Application
 
 [![Angular](https://img.shields.io/badge/Angular-14.1.3-red.svg)](https://angular.io/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Java](https://img.shields.io/badge/Java-17-blue.svg)](https://www.java.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-4.7.4-blue.svg)](https://www.typescriptlang.org/)
+[![Angular Material](https://img.shields.io/badge/Material-14.1.3-purple.svg)](https://material.angular.io/)
 
-> Full-stack application for a seasonal rental property portal connecting tenants and property owners in the Basque coast tourist area.
+> Angular 14 frontend application for ChâTop, a seasonal rental property portal connecting tenants and property owners in the Basque coast tourist area.
 
 ---
 
-## Project Structure
+## About This Project
 
-This repository contains a complete full-stack application:
+This is the **frontend** component of the ChâTop full-stack application. It provides a modern, responsive user interface built with Angular 14 and Material Design.
+
+### Full-Stack Architecture
 
 ```
 oc-p03-java-spring/
-├── api/                    # 🔴 Backend (Spring Boot) - MAIN EVALUATION PART
-│   ├── src/
-│   ├── pom.xml
+├── api/                    # Backend (Spring Boot REST API)
 │   └── README.md          # 📖 Complete backend documentation
-├── src/                   # Frontend (Angular 14)
+├── src/                   # Frontend (Angular 14) - THIS PART
 ├── ressources/            # Project resources
 │   ├── sql/              # Database schema
-│   ├── mockoon/          # API mock
-│   └── postman/          # API collection
-├── package.json
+│   ├── mockoon/          # API mock for development
+│   └── postman/          # API testing collection (Postman/Bruno)
 └── README.md             # This file
-
-## ⚠️ Important: Backend Evaluation
-
-**The main part of this project that will be evaluated is the BACKEND (Spring Boot API).**
-
-### 📖 Backend Documentation
-
-**For complete installation, setup, and API documentation, please refer to:**
-
-### **[→ Backend README (api/README.md)](./api/README.md)**
-
-The backend README contains:
-- Complete installation guide
-- Database setup instructions
-- Environment configuration
-- API documentation with Swagger
-- Authentication flow (JWT)
-- All API endpoints
-- Troubleshooting guide
-
-## Quick Start Guide
-
-### Prerequisites
-
-- **Node.js 14+** and npm (for frontend)
-- **Java 17+** (for backend)
-- **MySQL 8.0+** (for database)
-- **Maven 3.6+** (comes with backend)
-
-### 1. Database Setup
-
-Create and configure the MySQL database:
-
-```bash
-# Create database
-mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS chatop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-
-# Run SQL schema
-mysql -u root -p chatop < ressources/sql/script.sql
 ```
 
-### 2. Backend Setup (Port 3001)
+### Backend Documentation
 
-**See detailed instructions in [api/README.md](./api/README.md)**
+For backend installation, API documentation, and database setup, please refer to:
+
+**[→ Backend Documentation (api/README.md)](./api/README.md)**
+
+---
+
+## Prerequisites
+
+- **Node.js 14+** and npm
+- **Backend API** running on port 3001 (see [api/README.md](./api/README.md))
+
+To verify your installation:
 
 ```bash
-# Navigate to backend directory
-cd api
-
-# Configure environment
-cp .env.example .env
-# Edit .env with your MySQL credentials and JWT secret
-
-# Run backend
-./mvnw spring-boot:run
+node --version  # Should show v14+
+npm --version   # Should show npm 6+
 ```
 
-Backend will start on **http://localhost:3001**
+## Installation
 
-API Documentation (Swagger): **http://localhost:3001/swagger-ui/index.html**
-
-### 3. Frontend Setup (Port 4200)
+### 1. Install Dependencies
 
 ```bash
-# From project root
 npm install
-
-# Start Angular dev server
-npm run start
 ```
 
-Frontend will start on **http://localhost:4200**
+### 2. Start Development Server
+
+```bash
+npm run start
+# or
+ng serve
+```
+
+The application will start on **http://localhost:4200**
+
+---
 
 ## Frontend - Angular Application
 
@@ -163,11 +131,13 @@ The Angular app uses a proxy configuration (`src/proxy.config.json`) to forward 
 
 This means when the frontend makes a request to `/api/auth/login`, it's automatically forwarded to `http://localhost:3001/api/auth/login`.
 
+---
+
 ## Testing the Application
 
 ### Option 1: With Real Backend (Recommended)
 
-1. Start the backend: `cd api && ./mvnw spring-boot:run`
+1. Start the backend: See [api/README.md](./api/README.md) for instructions
 2. Start the frontend: `npm run start`
 3. Access the application at http://localhost:4200
 
@@ -180,53 +150,32 @@ For testing the frontend without the backend:
 3. Start Mockoon server (click play button)
 4. Start the frontend: `npm run start`
 
-### Option 3: With Postman (API Testing)
+---
 
-For testing the backend API directly:
+## Architecture & Authentication
 
-1. Import collection: `ressources/postman/rental.postman_collection.json`
-2. Test all API endpoints
-3. Documentation: https://learning.postman.com/docs/getting-started/importing-and-exporting-data/
+### Module Structure
 
-## Resources
+The Angular app uses **feature modules with lazy loading**:
+- **AuthModule**: Authentication (login/register) - loaded for unauthenticated users
+- **RentalsModule**: Rental property listings and management - protected by AuthGuard
 
-### Documentation
+### Routing Strategy
 
-- **Backend API**: [api/README.md](./api/README.md) - Complete backend documentation
-- **Angular**: [Angular Documentation](https://angular.io/docs)
-- **Spring Boot**: [Spring Boot Documentation](https://spring.io/projects/spring-boot)
-- **Angular Material**: [Material Design Components](https://material.angular.io/)
+- `/` - Redirects to auth module (login/register) if not authenticated
+- `/rentals/*` - Protected rental property routes (requires authentication)
+- `/me` - User profile page (protected)
+- `/404` - Not found page with wildcard redirect
 
-### Project Resources
+### Authentication Flow
 
-- **SQL Schema**: `ressources/sql/script.sql` - Database structure
-- **Mockoon Environment**: `ressources/mockoon/rental-oc.json` - API mock
-- **Postman Collection**: `ressources/postman/rental.postman_collection.json` - API tests
+1. **JWT Storage**: Token stored in localStorage upon successful login
+2. **JwtInterceptor** (`src/app/interceptors/jwt.interceptor.ts`): Automatically attaches Bearer token to all HTTP requests
+3. **AuthGuard** (`src/app/guards/auth.guard.ts`): Protects authenticated routes, redirects to login if not authenticated
+4. **UnauthGuard** (`src/app/guards/unauth.guard.ts`): Redirects authenticated users away from login/register pages
+5. **SessionService** (`src/app/services/session.service.ts`): Manages session state with RxJS BehaviorSubject for reactive updates
 
-## API Endpoints
-
-For the complete list of API endpoints with examples, see [api/README.md](./api/README.md#api-endpoints)
-
-**Quick Reference:**
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login (returns JWT token)
-- `GET /api/auth/me` - Get current user
-
-### Rentals
-- `GET /api/rentals` - List all rentals
-- `GET /api/rentals/{id}` - Get rental details
-- `POST /api/rentals` - Create rental (with image)
-- `PUT /api/rentals/{id}` - Update rental
-
-### Messages
-- `POST /api/messages` - Send message to owner
-
-### Users
-- `GET /api/user/{id}` - Get user info
-
-All endpoints (except register/login) require JWT authentication via `Authorization: Bearer <token>` header.
+---
 
 ## Troubleshooting
 
@@ -242,11 +191,32 @@ If port 4200 is in use, Angular will prompt for an alternative port.
 - Ensure backend is running on port 3001
 - Check browser console for errors
 - Verify JWT token in localStorage
-- Check Swagger UI for API status: http://localhost:3001/swagger-ui/index.html
+- Check Swagger UI for API status: http://localhost:3001/api/swagger-ui/index.html
 
-### More Troubleshooting
+### Backend Connection Issues
 
-For backend-specific issues, see [api/README.md - Troubleshooting](./api/README.md#troubleshooting)
+If the frontend cannot connect to the backend:
+- Verify backend is running: `http://localhost:3001/api/swagger-ui/index.html`
+- Check proxy configuration in `src/proxy.config.json`
+- Ensure no CORS errors in browser console
 
+---
+
+## Resources
+
+### Documentation
+
+- **Backend API**: [api/README.md](./api/README.md) - Complete backend documentation
+- **Angular**: [Angular Documentation](https://angular.io/docs)
+- **Angular Material**: [Material Design Components](https://material.angular.io/)
+- **TypeScript**: [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+
+### Project Resources
+
+- **Mockoon Environment**: `ressources/mockoon/rental-oc.json` - API mock
+- **SQL Schema**: `ressources/sql/script.sql` - Database structure (for backend)
+- **API Testing Collection**: `ressources/postman/rental.postman_collection.json` - Postman/Bruno collection (for backend)
+
+---
 
 **🔴 Remember**: The backend (Spring Boot API) is the main part being evaluated. For complete documentation, installation instructions, and API details, please refer to **[api/README.md](./api/README.md)**

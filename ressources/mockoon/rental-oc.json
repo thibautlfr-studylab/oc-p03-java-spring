@@ -491,6 +491,25 @@
           "bodyType": "INLINE",
           "crudKey": "id",
           "callbacks": []
+        },
+        {
+          "uuid": "8d668388-b173-4fd0-b2c9-8bfb08c1cbfd",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "bodyType": "INLINE",
+          "filePath": "",
+          "databucketID": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": false,
+          "crudKey": "id",
+          "callbacks": []
         }
       ],
       "responseMode": null,

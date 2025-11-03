@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "e2d2a80a-c3b8-456e-97ca-80aea313dfe7",
-		"name": "rental",
+		"_postman_id": "c086f700-44dc-4dab-841f-44cb74388841",
+		"name": "P3-RENTALS-spring",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "1183177"
+		"_exporter_id": "44190796",
+		"_collection_link": "https://thibaut-8725.postman.co/workspace/Openclassrooms~784c9f17-3cc7-44a2-b6f8-a487ee6729d2/collection/44190796-c086f700-44dc-4dab-841f-44cb74388841?action=share&source=collection_link&creator=44190796"
 	},
 	"item": [
 		{
@@ -24,11 +25,10 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:3001/api/auth/register",
+							"raw": "{{baseURL}}/api/auth/register",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "3001",
 							"path": [
 								"api",
 								"auth",
@@ -45,7 +45,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"login\": \"test@test.com\",\n    \"password\": \"test!31\"\n}",
+							"raw": "{\n    \"email\": \"test@test.com\",\n    \"password\": \"test!31\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -53,15 +53,14 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:3001/api/auth/login",
+							"raw": "{{baseURL}}/api/auth/login",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "3001",
 							"path": [
 								"api",
 								"auth",
-								"email"
+								"login"
 							]
 						}
 					},
@@ -70,24 +69,13 @@
 				{
 					"name": "me",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "jwt",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:3001/api/auth/me",
+							"raw": "{{baseURL}}/api/auth/me",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "3001",
 							"path": [
 								"api",
 								"auth",
@@ -108,11 +96,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:3001/api/rentals",
+							"raw": "{{baseURL}}/api/rentals",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "3001",
 							"path": [
 								"api",
 								"rentals"
@@ -127,15 +114,20 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:3001/api/rentals/1",
+							"raw": "{{baseURL}}/api/rentals/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "3001",
 							"path": [
 								"api",
 								"rentals",
-								"1"
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
 							]
 						}
 					},
@@ -173,19 +165,23 @@
 									"key": "description",
 									"value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a lectus eleifend, varius massa ac, mollis tortor. Quisque ipsum nulla, faucibus ac metus a, eleifend efficitur augue. Integer vel pulvinar ipsum. Praesent mollis neque sed sagittis ultricies. Suspendisse congue ligula at justo molestie, eget cursus nulla tincidunt. Pellentesque elementum rhoncus arcu, viverra gravida turpis mattis in. Maecenas tempor elementum lorem vel ultricies. Nam tempus laoreet eros, et viverra libero tincidunt a. Nunc vel nisi vulputate, sodales massa eu, varius erat.",
 									"type": "text"
+								},
+								{
+									"key": "picture",
+									"value": "null",
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
 						"url": {
-							"raw": "localhost:3001/api/rentals/1",
+							"raw": "{{baseURL}}/api/rentals",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "3001",
 							"path": [
 								"api",
-								"rentals",
-								"1"
+								"rentals"
 							]
 						}
 					},
@@ -201,7 +197,7 @@
 							"formdata": [
 								{
 									"key": "name",
-									"value": "name",
+									"value": "new name",
 									"type": "text"
 								},
 								{
@@ -222,15 +218,20 @@
 							]
 						},
 						"url": {
-							"raw": "localhost:3001/api/rentals/1",
+							"raw": "{{baseURL}}/api/rentals/:id",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "3001",
 							"path": [
 								"api",
 								"rentals",
-								"1"
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
 							]
 						}
 					},
@@ -256,11 +257,10 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:3001/api/messages/",
+							"raw": "{{baseURL}}/api/messages",
 							"host": [
-								"localhost"
+								"{{baseURL}}"
 							],
-							"port": "3001",
 							"path": [
 								"api",
 								"messages",
@@ -278,7 +278,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "jwt",
+				"value": "{{token}}",
 				"type": "string"
 			}
 		]
@@ -288,6 +288,7 @@
 			"listen": "prerequest",
 			"script": {
 				"type": "text/javascript",
+				"requests": {},
 				"exec": [
 					""
 				]
@@ -297,10 +298,21 @@
 			"listen": "test",
 			"script": {
 				"type": "text/javascript",
+				"requests": {},
 				"exec": [
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "http://localhost:3001"
+		},
+		{
+			"key": "token",
+			"value": "<your-token-after-login>"
 		}
 	]
 }

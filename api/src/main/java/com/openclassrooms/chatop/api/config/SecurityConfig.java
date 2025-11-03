@@ -2,21 +2,26 @@ package com.openclassrooms.chatop.api.config;
 
 import com.openclassrooms.chatop.api.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Security configuration for the application.
@@ -28,11 +33,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
-    private final UserDetailsService userDetailsService;
+
+    @Value("${app.cors.allowed-origins:http://localhost:4200}")
+    private String allowedOrigins;
 
     /**
      * Configure the security filter chain.
      * Defines which endpoints are public and which require authentication.
+     * IMPORTANT: With server.servlet.contextPath=/api, Spring strips the /api prefix
+     * before the request reaches this security filter chain. Therefore, matchers
+     * should NOT include /api prefix.
      *
      * @param http the HttpSecurity object
      * @return the configured SecurityFilterChain
@@ -44,23 +54,35 @@ public class SecurityConfig {
                 // Disable CSRF as we're using JWT tokens (stateless)
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // Configure authorization rules
-                .authorizeHttpRequests(auth -> auth
-                        // Allow public access to authentication endpoints
-                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                        // Require authentication for all other /api/** endpoints
-                        .requestMatchers("/api/**").authenticated()
-                        // Allow all other requests (e.g., for Swagger, health checks)
-                        .anyRequest().permitAll()
-                )
+                // Configure CORS with custom configuration source
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 // Set session management to stateless (no sessions, using JWT)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // Set authentication provider
-                .authenticationProvider(authenticationProvider())
+                // Configure authorization rules
+                .authorizeHttpRequests(authorize -> authorize
+                        // Allow all OPTIONS requests (CORS preflight)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Allow public access to authentication endpoints (no /api prefix!)
+                        .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        // Allow public access to static files (images)
+                        .requestMatchers("/uploads/**").permitAll()
+                        // Allow public access to Swagger/OpenAPI documentation
+                        // NOTE: /v3/api-docs (without /**) must be explicitly listed
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+                        // All other requests require authentication
+                        .anyRequest().authenticated()
+                )
 
                 // Add JWT filter before UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -69,21 +91,42 @@ public class SecurityConfig {
     }
 
     /**
-     * Configure the authentication provider.
-     * Uses our custom UserDetailsService and BCrypt password encoder.
+     * Configure CORS (Cross-Origin Resource Sharing).
+     * Allows the Angular frontend to make requests to this API.
      *
-     * @return the configured AuthenticationProvider
+     * @return the configured CorsConfigurationSource
      */
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // Parse allowed origins from comma-separated string
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+
+        // Allow common HTTP methods
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // Allow all headers
+        configuration.setAllowedHeaders(List.of("*"));
+
+        // Allow credentials (cookies, authorization headers)
+        configuration.setAllowCredentials(true);
+
+        // Cache preflight response for 1 hour
+        configuration.setMaxAge(3600L);
+
+        // Register CORS configuration for all paths
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 
     /**
      * Configure the authentication manager.
+     * Spring Security 6.x auto-configures the authentication provider when it detects
+     * UserDetailsService and PasswordEncoder beans, so we don't need to explicitly
+     * create a DaoAuthenticationProvider anymore.
      *
      * @param config the authentication configuration
      * @return the AuthenticationManager

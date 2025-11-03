@@ -9,6 +9,7 @@
 ## Table of Contents
 
 - [About the Project](#about-the-project)
+- [Quick Start](#quick-start)
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
@@ -20,6 +21,7 @@
 - [API Documentation](#api-documentation)
 - [API Endpoints](#api-endpoints)
 - [Authentication](#authentication)
+- [Error Handling](#error-handling)
 - [Project Structure](#project-structure)
 - [Development](#development)
 - [Testing](#testing)
@@ -36,8 +38,55 @@
 - Image upload and storage
 - MySQL database integration
 - Complete OpenAPI/Swagger documentation
+- Standardized error handling using RFC 9457 (Problem Details for HTTP APIs)
 
 The API is designed to work seamlessly with an Angular 14 frontend (available in the parent directory).
+
+---
+
+## Quick Start
+
+Get the backend up and running quickly:
+
+### 1. Database Setup
+
+```bash
+# Create database
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS chatop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# Run SQL schema
+mysql -u root -p chatop < ../ressources/sql/script.sql
+```
+
+### 2. Environment Configuration
+
+```bash
+# Navigate to backend directory
+cd api
+
+# Copy environment template
+cp .env.example .env
+
+# Edit .env with your MySQL credentials and JWT secret
+# DB_USERNAME=root
+# DB_PASSWORD=your_mysql_password
+# JWT_SECRET=your-super-secret-jwt-key
+```
+
+### 3. Run the Application
+
+```bash
+# Build and run
+./mvnw spring-boot:run
+```
+
+Backend will start on **http://localhost:3001**
+
+**Swagger UI**: [http://localhost:3001/api/swagger-ui/index.html](http://localhost:3001/api/swagger-ui/index.html)
+
+For detailed installation instructions, see [Installation](#installation) section below.
+
+---
 
 ## Technology Stack
 
@@ -49,7 +98,7 @@ The API is designed to work seamlessly with an Angular 14 frontend (available in
 | **Spring Data JPA** | 3.x | Database ORM |
 | **MySQL** | 8.0+ | Relational database |
 | **JJWT** | 0.12.3 | JWT token generation/validation |
-| **Springdoc OpenAPI** | 2.3.0 | API documentation |
+| **Springdoc OpenAPI** | 2.7.0 | API documentation |
 | **Lombok** | Latest | Boilerplate code reduction |
 | **Maven** | 3.6+ | Build tool |
 
@@ -278,7 +327,7 @@ This provides:
 
 Access the raw OpenAPI JSON:
 
-**OpenAPI JSON**: [http://localhost:3001/api/docs](http://localhost:3001/api/docs)
+**OpenAPI JSON**: [http://localhost:3001/api/v3/api-docs](http://localhost:3001/api/v3/api-docs)
 
 ---
 
@@ -382,54 +431,135 @@ curl -X POST http://localhost:3001/api/rentals \
 - **JWT Expiration**: Tokens expire after 24 hours (configurable)
 - **Protected Routes**: All endpoints except `/api/auth/register` and `/api/auth/login` require authentication
 
+---
+
+## Error Handling
+
+### RFC 9457 - Problem Details for HTTP APIs
+
+This API implements **RFC 9457** (Problem Details for HTTP APIs) for standardized error responses. All errors return a consistent JSON structure following the standard:
+
+```json
+{
+  "type": "https://api.chatop.com/errors/resource-not-found",
+  "title": "Resource Not Found",
+  "status": 404,
+  "detail": "Rental with id 999 not found",
+  "instance": "/api/rentals/999"
+}
+```
+
+### Error Response Structure
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | URI | A URI reference identifying the problem type |
+| `title` | string | A short, human-readable summary of the problem |
+| `status` | integer | HTTP status code |
+| `detail` | string | Human-readable explanation specific to this occurrence |
+| `instance` | URI | URI reference identifying the specific occurrence |
+
+### Common Error Types
+
+- **400 Bad Request**: Invalid input data or validation errors
+- **401 Unauthorized**: Missing or invalid JWT token
+- **403 Forbidden**: Valid token but insufficient permissions
+- **404 Not Found**: Requested resource doesn't exist
+- **409 Conflict**: Resource already exists (e.g., duplicate email)
+- **500 Internal Server Error**: Unexpected server error
+
+### Implementation
+
+Error handling is centralized in `GlobalExceptionHandler.java` using Spring's `@ControllerAdvice` and the `ProblemDetail` class introduced in Spring Framework 6.
+
+**Reference**: [RFC 9457 Specification](https://www.rfc-editor.org/rfc/rfc9457.html)
+
+---
+
 ## Project Structure
 
 ```
 api/
 ├── src/
 │   ├── main/
-│   │   ├── java/com/openclassrooms/chatop/
-│   │   │   ├── config/              # Configuration classes
-│   │   │   │   ├── JwtAuthenticationFilter.java
-│   │   │   │   ├── SecurityConfig.java
-│   │   │   │   └── SwaggerConfig.java
-│   │   │   ├── controller/          # REST controllers
-│   │   │   │   ├── AuthController.java
-│   │   │   │   ├── RentalController.java
-│   │   │   │   ├── MessageController.java
-│   │   │   │   └── UserController.java
-│   │   │   ├── dto/                 # Data Transfer Objects
-│   │   │   │   ├── request/
-│   │   │   │   └── response/
-│   │   │   ├── entity/              # JPA entities
-│   │   │   │   ├── User.java
-│   │   │   │   ├── Rental.java
-│   │   │   │   └── Message.java
-│   │   │   ├── repository/          # Spring Data repositories
-│   │   │   │   ├── UserRepository.java
-│   │   │   │   ├── RentalRepository.java
-│   │   │   │   └── MessageRepository.java
-│   │   │   ├── service/             # Business logic
-│   │   │   │   ├── AuthService.java
-│   │   │   │   ├── JwtService.java
-│   │   │   │   ├── RentalService.java
-│   │   │   │   ├── MessageService.java
-│   │   │   │   └── UserService.java
-│   │   │   ├── exception/           # Custom exceptions
-│   │   │   └── ApiApplication.java  # Main application
+│   │   ├── java/com/openclassrooms/chatop/api/
+│   │   │   ├── config/                    # Configuration classes
+│   │   │   │   ├── SecurityConfig.java       # Spring Security + JWT configuration
+│   │   │   │   ├── SwaggerConfig.java        # OpenAPI/Swagger documentation setup
+│   │   │   │   └── WebConfig.java            # CORS and web MVC configuration
+│   │   │   │
+│   │   │   ├── controller/                # REST API endpoints
+│   │   │   │   ├── AuthController.java       # Authentication (register/login/me)
+│   │   │   │   ├── RentalController.java     # Rental CRUD operations
+│   │   │   │   ├── MessageController.java    # Message sending
+│   │   │   │   └── UserController.java       # User information
+│   │   │   │
+│   │   │   ├── dto/                       # Data Transfer Objects (API contracts)
+│   │   │   │   ├── request/                  # API request DTOs
+│   │   │   │   │   ├── AuthRequest.java         # Login/register credentials
+│   │   │   │   │   ├── MessageRequest.java      # Message creation
+│   │   │   │   │   └── RentalRequest.java       # Rental creation/update
+│   │   │   │   ├── response/                 # API response DTOs
+│   │   │   │   │   ├── AuthResponse.java        # JWT token response
+│   │   │   │   │   ├── ErrorResponse.java       # Error messages
+│   │   │   │   │   ├── RentalListResponse.java  # Rentals list wrapper
+│   │   │   │   │   └── SuccessResponse.java     # Success messages
+│   │   │   │   ├── RentalDTO.java            # Rental data representation
+│   │   │   │   └── UserDTO.java              # User data representation
+│   │   │   │
+│   │   │   ├── exception/                 # Custom exceptions and global handler
+│   │   │   │   ├── GlobalExceptionHandler.java  # Centralized error handling
+│   │   │   │   ├── BusinessValidationException.java
+│   │   │   │   ├── InvalidFileException.java
+│   │   │   │   ├── ResourceAlreadyExistsException.java
+│   │   │   │   └── ResourceNotFoundException.java
+│   │   │   │
+│   │   │   ├── model/                     # JPA entities (database tables)
+│   │   │   │   ├── User.java                 # USERS table
+│   │   │   │   ├── Rental.java               # RENTALS table
+│   │   │   │   └── Message.java              # MESSAGES table
+│   │   │   │
+│   │   │   ├── repository/                # Data access layer
+│   │   │   │   ├── UserRepository.java       # User queries
+│   │   │   │   ├── RentalRepository.java     # Rental queries
+│   │   │   │   └── MessageRepository.java    # Message queries
+│   │   │   │
+│   │   │   ├── security/                  # JWT authentication
+│   │   │   │   └── JwtAuthenticationFilter.java # Token validation filter
+│   │   │   │
+│   │   │   ├── service/                   # Business logic layer
+│   │   │   │   ├── interfaces/               # Service contracts
+│   │   │   │   │   ├── IAuthService.java
+│   │   │   │   │   ├── IJwtService.java
+│   │   │   │   │   ├── IRentalService.java
+│   │   │   │   │   ├── IMessageService.java
+│   │   │   │   │   ├── IUserService.java
+│   │   │   │   │   └── IFileStorageService.java
+│   │   │   │   ├── implementations/          # Service implementations
+│   │   │   │   │   ├── AuthServiceImpl.java     # Authentication logic
+│   │   │   │   │   ├── JwtServiceImpl.java      # JWT token generation/validation
+│   │   │   │   │   ├── RentalServiceImpl.java   # Rental business logic
+│   │   │   │   │   ├── MessageServiceImpl.java  # Message handling
+│   │   │   │   │   ├── UserServiceImpl.java     # User management
+│   │   │   │   │   └── FileStorageServiceImpl.java # Image upload/storage
+│   │   │   │   └── CustomUserDetailsService.java # Spring Security user details
+│   │   │   │
+│   │   │   └── ApiApplication.java        # Spring Boot main application
+│   │   │
 │   │   └── resources/
-│   │       ├── application.properties
-│   │       ├── static/
-│   │       └── templates/
-│   └── test/                        # Unit and integration tests
-├── uploads/                         # Uploaded images directory
-├── .env                             # Environment variables (not committed)
-├── .env.example                     # Environment template
-├── pom.xml                          # Maven dependencies
-└── README.md                        # This file
+│   │       ├── application.properties     # Application configuration
+│   │       ├── static/                    # Static resources (images)
+│   │       └── templates/                 # Email templates (if needed)
+│   │
+│   └── test/                              # Unit and integration tests
+│       └── java/com/openclassrooms/chatop/api/
+│
+├── uploads/                               # Uploaded images directory (runtime)
+├── .env                                   # Environment variables (not committed)
+├── .env.example                           # Environment template
+├── pom.xml                                # Maven dependencies
+└── README.md                              # This file
 ```
-
----
 
 ## Development
 
@@ -448,6 +578,7 @@ This project follows **SOLID principles** and Spring Boot best practices:
 - Validate input data with Spring Validation annotations
 - Document all endpoints with Swagger annotations
 - Use Lombok to reduce boilerplate code
+- Follow RFC 9457 for standardized error responses
 
 ### Development Tools
 
@@ -457,13 +588,26 @@ Useful plugins:
 - Database Navigator
 
 
-### Testing with Postman
+### Testing the API
+
+You can test the API using Postman or Bruno:
+
+#### Option 1: Postman
 
 A complete Postman collection is available:
 
 1. Import the collection: `../ressources/postman/rental.postman_collection.json`
 2. Test all endpoints systematically
 3. Collection includes example requests and environment variables
+4. Documentation: [Postman Learning Center](https://learning.postman.com/docs/getting-started/importing-and-exporting-data/)
+
+#### Option 2: Bruno (Alternative)
+
+Bruno is an open-source alternative to Postman:
+
+1. Download: [https://www.usebruno.com/](https://www.usebruno.com/)
+2. Import the Postman collection (Bruno supports Postman format)
+3. Bruno is lightweight, fast, and Git-friendly (stores collections as plain text files)
 
 ---
 
@@ -552,5 +696,12 @@ logging.file.name=logs/chatop-api.log
 - [Spring Security Reference](https://docs.spring.io/spring-security/reference/)
 - [Spring Data JPA Guide](https://spring.io/guides/gs/accessing-data-jpa/)
 - [Swagger/OpenAPI](https://springdoc.org/)
+
+### API Testing Tools
+- [Postman](https://www.postman.com/) - API testing platform (collection available in `../ressources/postman/`)
+- [Bruno](https://www.usebruno.com/) - Open-source alternative to Postman (supports Postman format)
+
+### Frontend
+- [Frontend Documentation](../README.md) - Angular 14 frontend application
 
 **Note**: This API is designed to work with the Angular frontend located in the parent directory. Make sure to run both frontend and backend simultaneously for the complete application experience.
