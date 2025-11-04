@@ -26,6 +26,7 @@ public class MessageServiceImpl implements IMessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
+    private final MessageMapper messageMapper;
 
     @Override
     @Transactional
@@ -39,11 +40,11 @@ public class MessageServiceImpl implements IMessageService {
                 .orElseThrow(() -> new ResourceNotFoundException("Rental", "id", request.rental_id()));
 
         // Create message entity
-        Message message = MessageMapper.INSTANCE.toEntity(request);
+        Message message = messageMapper.toEntity(request);
         message.setUser(user);
         message.setRental(rental);
 
         // Save message
-        return MessageMapper.INSTANCE.toDto(messageRepository.save(message));
+        return messageMapper.toDto(messageRepository.save(message));
     }
 }

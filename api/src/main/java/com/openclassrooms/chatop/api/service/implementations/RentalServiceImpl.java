@@ -30,17 +30,18 @@ public class RentalServiceImpl implements IRentalService {
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
     private final IFileStorageService fileStorageService;
+    private final RentalMapper rentalMapper;
 
     @Override
     @Transactional(readOnly = true)
     public List<RentalDTO> getAllRentals() {
-        return RentalMapper.INSTANCE.toDtoList(rentalRepository.findAllWithOwner());
+        return rentalMapper.toDtoList(rentalRepository.findAllWithOwner());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<RentalDTO> getRentalById(Long id) {
-        return rentalRepository.findByIdWithOwner(id).map(RentalMapper.INSTANCE::toDto);
+        return rentalRepository.findByIdWithOwner(id).map(rentalMapper::toDto);
     }
 
     @Override
@@ -54,13 +55,13 @@ public class RentalServiceImpl implements IRentalService {
         String pictureUrl = fileStorageService.storeFile(request.picture());
 
         // Map the request to a Rental entity and set values not handled by MapStruct
-        Rental rental = RentalMapper.INSTANCE.toEntity(request);
+        Rental rental = rentalMapper.toEntity(request);
         rental.setOwner(owner);
         rental.setPicture(pictureUrl);
 
 
         // Save the rental and return the DTO
-        return RentalMapper.INSTANCE.toDto(rentalRepository.save(rental));
+        return rentalMapper.toDto(rentalRepository.save(rental));
     }
 
     @Override
@@ -68,7 +69,7 @@ public class RentalServiceImpl implements IRentalService {
     public Optional<RentalDTO> updateRental(Long id, UpdateRentalRequest request) {
         return rentalRepository.findById(id).map(rental -> {
             // MapStruct automatically updates only non-null fields from the request
-            RentalMapper.INSTANCE.updateFromRequest(request, rental);
+            rentalMapper.updateFromRequest(request, rental);
 
             // Handle picture update if a new file is provided
             if (request.picture() != null && !request.picture().isEmpty()) {
@@ -78,7 +79,7 @@ public class RentalServiceImpl implements IRentalService {
 
             // Save the updated rental (updatedAt is auto-updated by @UpdateTimestamp)
             Rental updatedRental = rentalRepository.save(rental);
-            return RentalMapper.INSTANCE.toDto(updatedRental);
+            return rentalMapper.toDto(updatedRental);
         });
     }
 }

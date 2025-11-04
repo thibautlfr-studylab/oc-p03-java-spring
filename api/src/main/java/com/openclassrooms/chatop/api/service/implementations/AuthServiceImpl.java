@@ -35,6 +35,7 @@ public class AuthServiceImpl implements IAuthService {
     private final PasswordEncoder passwordEncoder;
     private final IJwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserMapper userMapper;
 
     @Override
     @Transactional
@@ -45,7 +46,7 @@ public class AuthServiceImpl implements IAuthService {
         }
 
         // Create a new user
-        User user = UserMapper.INSTANCE.toEntity(request);
+        User user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.password()));
 
 
@@ -108,6 +109,6 @@ public class AuthServiceImpl implements IAuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
 
         // Convert to DTO using UserMapper
-        return UserMapper.INSTANCE.toDto(user);
+        return userMapper.toDto(user);
     }
 }
