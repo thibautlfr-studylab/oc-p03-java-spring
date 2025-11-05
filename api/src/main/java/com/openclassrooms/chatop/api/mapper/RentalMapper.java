@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.factory.Mappers;
 
 /**
  * MapStruct mapper for Rental entity to RentalDTO conversions.
@@ -17,8 +16,6 @@ import org.mapstruct.factory.Mappers;
  */
 @Mapper(componentModel = "spring")
 public interface RentalMapper {
-
-    RentalMapper INSTANCE = Mappers.getMapper(RentalMapper.class);
 
     // -----------------------------
     // Entity -> DTO

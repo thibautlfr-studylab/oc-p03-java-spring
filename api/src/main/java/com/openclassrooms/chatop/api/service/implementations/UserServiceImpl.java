@@ -19,9 +19,10 @@ import java.util.Optional;
 public class UserServiceImpl implements IUserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
     public Optional<UserDTO> getUserById(Long id) {
-        return userRepository.findById(id).map(UserMapper.INSTANCE::toDto);
+        return userRepository.findById(id).map(userMapper::toDto);
     }
 }
