@@ -3,6 +3,7 @@ package com.openclassrooms.chatop.api.service;
 import com.openclassrooms.chatop.api.dto.RentalDTO;
 import com.openclassrooms.chatop.api.dto.request.RentalRequest.CreateRentalRequest;
 import com.openclassrooms.chatop.api.dto.request.RentalRequest.UpdateRentalRequest;
+import com.openclassrooms.chatop.api.mapper.RentalMapper;
 import com.openclassrooms.chatop.api.model.Rental;
 import com.openclassrooms.chatop.api.model.User;
 import com.openclassrooms.chatop.api.repository.RentalRepository;
@@ -50,6 +51,9 @@ class RentalServiceTest {
     private IFileStorageService fileStorageService;
 
     @Mock
+    private RentalMapper rentalMapper;
+
+    @Mock
     private UserDetails userDetails;
 
     @InjectMocks
@@ -90,6 +94,67 @@ class RentalServiceTest {
 
         // Setup UserDetails mock - will be configured per test as needed
         lenient().when(userDetails.getUsername()).thenReturn("test@example.com");
+
+        // Setup RentalMapper mock behaviors
+        lenient().when(rentalMapper.toDto(any(Rental.class))).thenAnswer(invocation -> {
+            Rental rental = invocation.getArgument(0);
+            return new RentalDTO(
+                    rental.getId(),
+                    rental.getName(),
+                    rental.getSurface(),
+                    rental.getPrice(),
+                    rental.getPicture(),
+                    rental.getDescription(),
+                    rental.getOwner() != null ? rental.getOwner().getId() : null,
+                    rental.getCreatedAt(),
+                    rental.getUpdatedAt()
+            );
+        });
+
+        lenient().when(rentalMapper.toDtoList(any(List.class))).thenAnswer(invocation -> {
+            List<Rental> rentals = invocation.getArgument(0);
+            return rentals.stream()
+                    .map(rental -> new RentalDTO(
+                            rental.getId(),
+                            rental.getName(),
+                            rental.getSurface(),
+                            rental.getPrice(),
+                            rental.getPicture(),
+                            rental.getDescription(),
+                            rental.getOwner() != null ? rental.getOwner().getId() : null,
+                            rental.getCreatedAt(),
+                            rental.getUpdatedAt()
+                    ))
+                    .toList();
+        });
+
+        lenient().when(rentalMapper.toEntity(any(CreateRentalRequest.class))).thenAnswer(invocation -> {
+            CreateRentalRequest request = invocation.getArgument(0);
+            Rental rental = new Rental();
+            rental.setName(request.name());
+            rental.setSurface(request.surface());
+            rental.setPrice(request.price());
+            rental.setDescription(request.description());
+            return rental;
+        });
+
+        lenient().doAnswer(invocation -> {
+            UpdateRentalRequest request = invocation.getArgument(0);
+            Rental rental = invocation.getArgument(1);
+            if (request.name() != null) {
+                rental.setName(request.name());
+            }
+            if (request.surface() != null) {
+                rental.setSurface(request.surface());
+            }
+            if (request.price() != null) {
+                rental.setPrice(request.price());
+            }
+            if (request.description() != null) {
+                rental.setDescription(request.description());
+            }
+            return null;
+        }).when(rentalMapper).updateFromRequest(any(UpdateRentalRequest.class), any(Rental.class));
     }
 
     @Nested
