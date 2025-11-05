@@ -5,16 +5,13 @@ import com.openclassrooms.chatop.api.dto.request.MessageRequest.CreateMessageReq
 import com.openclassrooms.chatop.api.model.Message;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 /**
  * MapStruct mapper for Message entity to MessageDTO conversions.
  * This interface automatically generates the implementation at compile time.
  */
-@Mapper
+@Mapper(componentModel = "spring")
 public interface MessageMapper {
-
-    MessageMapper INSTANCE = Mappers.getMapper(MessageMapper.class);
 
     // -----------------------------
     // Entity -> DTO
