@@ -50,6 +50,31 @@ Get the backend up and running quickly:
 
 ### 1. Database Setup
 
+**Choose one of the following methods:**
+
+#### Option A: Using Docker (Recommended)
+
+```bash
+# Navigate to backend directory
+cd api
+
+# Start MySQL container (creates database and tables automatically)
+docker-compose up -d
+
+# Verify container is running
+docker-compose ps
+```
+
+This automatically:
+- Creates the `chatop` database
+- Runs the SQL schema from `../ressources/sql/script.sql`
+- Configures root user with no password
+- Handles case-insensitive table names
+
+#### Option B: Using Local MySQL
+
+> Need MySQL 8.0+ installed and running
+
 ```bash
 # Create database
 mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS chatop CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
@@ -61,16 +86,26 @@ mysql -u root -p chatop < ../ressources/sql/script.sql
 ### 2. Environment Configuration
 
 ```bash
-# Navigate to backend directory
-cd api
-
 # Copy environment template
 cp .env.example .env
 
-# Edit .env with your MySQL credentials and JWT secret
-# DB_USERNAME=root
-# DB_PASSWORD=your_mysql_password
-# JWT_SECRET=your-super-secret-jwt-key
+# Edit .env with your configuration
+```
+
+**For Docker setup:**
+```properties
+DB_URL=jdbc:mysql://localhost:3306/chatop
+DB_USERNAME=root
+DB_PASSWORD=
+JWT_SECRET=your-super-secret-jwt-key
+```
+
+**For local MySQL setup:**
+```properties
+DB_URL=jdbc:mysql://localhost:3306/chatop
+DB_USERNAME=root
+DB_PASSWORD=your_mysql_password
+JWT_SECRET=your-super-secret-jwt-key
 ```
 
 ### 3. Run the Application
@@ -83,6 +118,8 @@ cp .env.example .env
 Backend will start on **http://localhost:3001**
 
 **Swagger UI**: [http://localhost:3001/api/swagger-ui/index.html](http://localhost:3001/api/swagger-ui/index.html)
+
+📘 **Docker users**: See [DOCKER.md](./DOCKER.md) for detailed Docker setup and troubleshooting.
 
 For detailed installation instructions, see [Installation](#installation) section below.
 
@@ -138,15 +175,24 @@ The application follows a **layered MVC architecture** with clear separation :
 Before installation, ensure you have:
 
 - **Java 17** or higher ([Download](https://www.oracle.com/java/technologies/downloads/))
-- **Maven 3.6+** (comes with the Maven wrapper in this project)
-- **MySQL 8.0+** ([Download](https://dev.mysql.com/downloads/mysql/))
+- **Maven 3.6+** (comes with the Maven wrapper in this project) (`./mvnw`)
 - **Git** for cloning the repository
+
+**For database, choose one:**
+- **Docker** (recommended) - [Download Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- **MySQL 8.0+** (alternative) - [Download MySQL](https://dev.mysql.com/downloads/mysql/)
 
 To verify your installations:
 
 ```bash
 java -version    # Should show Java 17+
-mvn -version     # Should show Maven 3.6+
+mvn -version     # or ./mvnw -version  # Should show Maven 3.6+
+
+# If using Docker:
+docker --version        # Should show Docker 20+
+docker-compose --version  # Should show Docker Compose 2+
+
+# If using local MySQL:
 mysql --version  # Should show MySQL 8.0+
 ```
 
@@ -163,7 +209,87 @@ cd oc-p03-java-spring/api
 
 ### 2. Database Setup
 
-#### Step 1: Start MySQL Server
+**Choose one of the following methods:**
+
+#### Option A: Using Docker (Recommended)
+
+Docker provides an isolated, consistent environment with automatic database initialization.
+
+**Step 1: Start MySQL Container**
+
+```bash
+# From the api/ directory
+docker-compose up -d
+```
+
+This command automatically:
+- Downloads MySQL 8.0 image (if not already present)
+- Creates and starts the `chatop-mysql` container
+- Creates the `chatop` database with utf8mb4 encoding
+- Executes the SQL schema from `../ressources/sql/script.sql`
+- Configures root user with no password
+- Sets up case-insensitive table names (`lower_case_table_names=1`)
+
+**Step 2: Verify Container is Running**
+
+```bash
+docker-compose ps
+```
+
+You should see:
+```
+NAME            STATUS    PORTS
+chatop-mysql    running   0.0.0.0:3306->3306/tcp
+```
+
+**Step 3: Verify Tables**
+
+```bash
+docker exec chatop-mysql mysql -u root chatop -e "SHOW TABLES;"
+```
+
+Expected output:
+```
+Tables_in_chatop
+messages
+rentals
+users
+```
+
+**Docker Management Commands:**
+
+```bash
+# View MySQL logs
+docker-compose logs -f mysql
+
+# Stop the container
+docker-compose down
+
+# Stop and remove data (reset database)
+docker-compose down -v
+
+# Restart container
+docker-compose restart
+```
+
+**Troubleshooting Docker Setup:**
+
+- **Port 3306 already in use**: If you have MySQL running locally via Homebrew/apt:
+  ```bash
+  # macOS
+  brew services stop mysql
+
+  # Linux
+  sudo systemctl stop mysql
+  ```
+
+- **See detailed Docker documentation**: [DOCKER.md](./DOCKER.md)
+
+#### Option B: Using Local MySQL Installation
+
+If you prefer to use your local MySQL installation:
+
+**Step 1: Start MySQL Server**
 
 Make sure your MySQL server is running:
 
@@ -178,7 +304,7 @@ sudo systemctl start mysql
 # Start MySQL from Services or MySQL Workbench
 ```
 
-#### Step 2: Create the Database
+**Step 2: Create the Database**
 
 Connect to MySQL and create the database:
 
@@ -193,7 +319,7 @@ CREATE DATABASE IF NOT EXISTS chatop CHARACTER SET utf8mb4 COLLATE utf8mb4_unico
 exit;
 ```
 
-#### Step 3: Run the SQL Schema
+**Step 3: Run the SQL Schema**
 
 Execute the provided SQL script to create tables:
 
@@ -201,7 +327,7 @@ Execute the provided SQL script to create tables:
 mysql -u root -p chatop < ../ressources/sql/script.sql
 ```
 
-#### Step 4: Verify Installation
+**Step 4: Verify Installation**
 
 Check that tables were created successfully:
 
@@ -220,7 +346,9 @@ Expected output:
 +------------------+
 ```
 
-**Database Schema:**
+---
+
+**Database Schema (Both Options):**
 
 - **USERS**: User accounts (id, email, name, password, created_at, updated_at)
 - **RENTALS**: Rental properties (id, name, surface, price, picture, description, owner_id, created_at, updated_at)
