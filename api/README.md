@@ -46,7 +46,37 @@ The API is designed to work seamlessly with an Angular 14 frontend (available in
 
 ## Quick Start
 
-Get the backend up and running quickly:
+### Option 1: Using Makefile ⚡ (Recommended)
+
+The easiest way to set up everything from the **project root**:
+
+```bash
+# From project root (not api/ directory)
+cd ..
+
+# Start everything (auto-setup on first run)
+make start-all
+```
+
+This **single command** automatically:
+- ✅ Detects first run and creates `.env` with secure JWT secret
+- ✅ Installs frontend dependencies (if needed)
+- ✅ Starts MySQL with Docker and waits until ready
+- ✅ Starts both frontend and backend services
+
+**Useful Makefile commands** (run from project root):
+```bash
+make stop          # Stop all services
+make status        # Check services status
+make logs-backend  # View backend logs
+make help          # See all available commands
+```
+
+---
+
+### Option 2: Manual Setup
+
+Get the backend up and running manually:
 
 ### 1. Database Setup
 
@@ -690,6 +720,25 @@ api/
 ```
 
 ## Development
+
+### Quick Development with Makefile
+
+For rapid development, use the Makefile commands from the **project root**:
+
+```bash
+# Start backend only (from api/ directory)
+cd api && ./mvnw spring-boot:run
+
+# Or use Makefile from project root for full-stack development
+cd .. && make start-all      # Start frontend + backend
+cd .. && make logs-backend   # View backend logs
+cd .. && make stop           # Stop all services
+cd .. && make test           # Run all tests (frontend + backend)
+```
+
+See the [project root README](../README.md) for complete Makefile documentation.
+
+---
 
 ### Code Style and Best Practices
 
