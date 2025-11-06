@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "c086f700-44dc-4dab-841f-44cb74388841",
+		"_postman_id": "f7ee8ea8-8e6c-40a9-849b-5b642cce48bf",
 		"name": "P3-RENTALS-spring",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "44190796",
-		"_collection_link": "https://thibaut-8725.postman.co/workspace/Openclassrooms~784c9f17-3cc7-44a2-b6f8-a487ee6729d2/collection/44190796-c086f700-44dc-4dab-841f-44cb74388841?action=share&source=collection_link&creator=44190796"
+		"_collection_link": "https://thibaut-8725.postman.co/workspace/Openclassrooms~784c9f17-3cc7-44a2-b6f8-a487ee6729d2/collection/44190796-f7ee8ea8-8e6c-40a9-849b-5b642cce48bf?action=share&source=collection_link&creator=44190796"
 	},
 	"item": [
 		{
@@ -165,12 +165,6 @@
 									"key": "description",
 									"value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam a lectus eleifend, varius massa ac, mollis tortor. Quisque ipsum nulla, faucibus ac metus a, eleifend efficitur augue. Integer vel pulvinar ipsum. Praesent mollis neque sed sagittis ultricies. Suspendisse congue ligula at justo molestie, eget cursus nulla tincidunt. Pellentesque elementum rhoncus arcu, viverra gravida turpis mattis in. Maecenas tempor elementum lorem vel ultricies. Nam tempus laoreet eros, et viverra libero tincidunt a. Nunc vel nisi vulputate, sodales massa eu, varius erat.",
 									"type": "text"
-								},
-								{
-									"key": "picture",
-									"value": "null",
-									"type": "text",
-									"disabled": true
 								}
 							]
 						},
@@ -249,7 +243,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"message\": \"mon message\",\n    \"user_id\": 1,\n    \"rental_id\": 1\n}",
+							"raw": "{\n    \"message\": \"mon message\",\n    \"rental_id\": 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -263,8 +257,7 @@
 							],
 							"path": [
 								"api",
-								"messages",
-								""
+								"messages"
 							]
 						}
 					},
