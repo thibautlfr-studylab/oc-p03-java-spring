@@ -316,10 +316,11 @@ Authorization: Bearer {jwt_token}
 ```json
 {
   "message": "string (required)",
-  "user_id": "number (required)",
   "rental_id": "number (required)"
 }
 ```
+
+**Note de sécurité**: Le `user_id` n'est PAS fourni dans la requête pour éviter l'usurpation d'identité. L'utilisateur est automatiquement extrait du token JWT par le backend.
 
 **Réponses**:
 
@@ -330,10 +331,11 @@ Authorization: Bearer {jwt_token}
 | 401 | Token manquant ou invalide | `""` (empty) |
 
 **Spécificités**:
+- L'utilisateur est extrait automatiquement du token JWT (via `SecurityContextHolder`)
 - Valider que `rental_id` existe
-- Valider que `user_id` existe
 - Générer automatiquement `created_at` et `updated_at`
 - Stocker le message en BDD
+- **Sécurité**: Ne jamais accepter `user_id` dans la requête pour éviter l'usurpation d'identité
 
 ---
 

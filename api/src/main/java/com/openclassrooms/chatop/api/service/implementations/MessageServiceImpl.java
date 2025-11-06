@@ -4,6 +4,7 @@ import com.openclassrooms.chatop.api.dto.MessageDTO;
 import com.openclassrooms.chatop.api.dto.request.MessageRequest.CreateMessageRequest;
 import com.openclassrooms.chatop.api.exception.ResourceNotFoundException;
 import com.openclassrooms.chatop.api.mapper.MessageMapper;
+import com.openclassrooms.chatop.api.mapper.UserMapper;
 import com.openclassrooms.chatop.api.model.Message;
 import com.openclassrooms.chatop.api.model.Rental;
 import com.openclassrooms.chatop.api.model.User;
@@ -27,13 +28,14 @@ public class MessageServiceImpl implements IMessageService {
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
     private final MessageMapper messageMapper;
+    private final AuthServiceImpl authService;
+    private final UserMapper userMapper;
 
     @Override
     @Transactional
     public MessageDTO createMessage(CreateMessageRequest request) {
-        // Validate user exists
-        User user = userRepository.findById(request.user_id())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.user_id()));
+        // Get current authenticated user
+        User user = userMapper.toEntity(authService.getCurrentUser());
 
         // Validate rental exists
         Rental rental = rentalRepository.findById(request.rental_id())

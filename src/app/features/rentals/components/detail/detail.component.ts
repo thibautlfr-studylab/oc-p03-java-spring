@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { Rental } from 'src/app/features/rentals/interfaces/rental.interface';
-import { SessionService } from 'src/app/services/session.service';
 import { MessageRequest } from '../../interfaces/api/messageRequest.interface';
 import { MessageResponse } from '../../interfaces/api/messageResponse.interface';
 import { MessagesService } from '../../services/messages.service';
@@ -24,7 +23,6 @@ export class DetailComponent implements OnInit {
     private fb: FormBuilder,
     private messagesService: MessagesService,
     private rentalsService: RentalsService,
-    private sessionService: SessionService,
     private matSnackBar: MatSnackBar) {
     this.initMessageForm();
   }
@@ -44,7 +42,6 @@ export class DetailComponent implements OnInit {
   public sendMessage(): void {
     const message = {
       rental_id: this.rental!.id,
-      user_id: this.sessionService.user?.id,
       message: this.messageForm.value.message
     } as MessageRequest;
 
