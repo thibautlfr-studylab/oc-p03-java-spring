@@ -46,7 +46,34 @@ node --version  # Should show v14+
 npm --version   # Should show npm 6+
 ```
 
-## Installation
+## Quick Start with Makefile ⚡
+
+The easiest way to set up and run the entire application (frontend + backend + database):
+
+```bash
+make start-all
+```
+
+This **single command** automatically:
+- ✅ Detects first run and creates `.env` with secure JWT secret
+- ✅ Installs frontend dependencies (if needed)
+- ✅ Starts MySQL with Docker and waits until ready
+- ✅ Starts both frontend (port 4200) and backend (port 3001)
+
+**Other useful commands:**
+```bash
+make stop          # Stop all services
+make status        # Check services status
+make logs-frontend # View frontend logs
+make logs-backend  # View backend logs
+make help          # See all available commands
+```
+
+---
+
+## Manual Installation
+
+If you prefer to set up manually without the Makefile:
 
 ### 1. Install Dependencies
 
@@ -63,6 +90,8 @@ ng serve
 ```
 
 The application will start on **http://localhost:4200**
+
+**Note:** You'll also need to set up and start the backend manually (see [api/README.md](./api/README.md))
 
 ---
 
@@ -106,6 +135,16 @@ src/
 
 ### Development Commands
 
+**Using Makefile (recommended):**
+```bash
+make start-all      # Start frontend & backend together
+make stop           # Stop all services
+make logs-frontend  # View frontend logs
+make status         # Check services status
+make help           # See all commands
+```
+
+**Using npm directly:**
 ```bash
 # Install dependencies
 npm install
